@@ -1,0 +1,11 @@
+{
+    "author": "Hill30",
+    "name": "Hill30 components",
+    "description": "Hill30 AngularJS extras",
+    "version": "0.0.1",
+    "main": "",
+    "dependencies": {
+        "angular": "~1.0.7",
+        "angular-resource": "~1.0.7"
+    }
+}
