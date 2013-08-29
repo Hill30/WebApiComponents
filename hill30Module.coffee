@@ -1,1 +1,1 @@
-angular.module('hill30', ['hill30.ui.scroll', 'hill30.services'])
+hill30Module = angular.module('hill30', [])
