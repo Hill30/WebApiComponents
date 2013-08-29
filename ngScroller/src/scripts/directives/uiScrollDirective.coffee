@@ -12,7 +12,7 @@ globals: angular, window
 		element.scrollTop(value)
 
 ###
-angular.module('ui.scroll', [])
+angular.module('hill30.ui.scroll', [])
 
 	.directive( 'ngScrollViewport'
 		[ '$log'

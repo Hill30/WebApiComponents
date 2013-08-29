@@ -1,5 +1,3 @@
-angular.module('services', [])
-
 angular.module('hill30.services')
 	.service('filtersService',[
 		'$log', '$rootScope', '$location', '$routeParams'
