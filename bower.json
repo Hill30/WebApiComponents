@@ -5,8 +5,8 @@
     "version": "0.0.1",
     "main": "",
     "dependencies": {
-        "jquery": "1.10.2",
-		"jquery": "~2.0",
+        "jquery-legacy": "jquery#1.10.2",
+        "jquery": "~2.0",
         "angular": "~1.0.7",
         "angular-resource": "~1.0.7"
     }
