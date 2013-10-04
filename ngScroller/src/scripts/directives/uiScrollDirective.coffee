@@ -210,37 +210,30 @@ hill30Module
 							linker itemScope,
 								(clone) ->
 									wrapper.element = clone
-									if index > first + 1
+									if index > first
 										if index == next
 											handler.append clone
 											buffer.push wrapper
 										else
 											buffer[index-first].element.after clone
 											buffer.splice index-first+1, 0, wrapper
-										# this watch fires once per item inserted after the item template has been processed and values inserted
-										# which allows to gather the 'real' height of the thing
-										dereg = itemScope.$watch 'heightAdjustment', ->
-											handler.bottomPadding(Math.max(0,handler.bottomPadding() - wrapper.element.outerHeight(true)))
-											dereg()
 									else
 										handler.prepend clone
 										buffer.unshift wrapper
-										# this watch fires once per item inserted after the item template has been processed and values inserted
-										# which allows to gather the 'real' height of the thing
-										dereg = itemScope.$watch 'heightAdjustment', ->
-											# an element is inserted at the top
-											newHeight = handler.topPadding() - wrapper.element.outerHeight(true)
-											# adjust padding to prevent it from visually pushing everything down
-											if newHeight >= 0
-												# if possible, reduce topPadding
-												handler.topPadding(newHeight)
-											else
-												# if not, increment scrollTop
-												scrollTop = viewport.scrollTop() + wrapper.element.outerHeight(true)
-												viewport.scrollTop(scrollTop)
-											dereg()
 
-							itemScope
+							if index > first
+								handler.bottomPadding(Math.max(0,handler.bottomPadding() - wrapper.element.outerHeight(true)))
+							else
+								# an element is inserted at the top
+								newHeight = handler.topPadding() - wrapper.element.outerHeight(true)
+								# adjust padding to prevent it from visually pushing everything down
+								if newHeight >= 0
+									# if possible, reduce topPadding
+									handler.topPadding(newHeight)
+								else
+									# if not, increment scrollTop
+									scrollTop = viewport.scrollTop() + wrapper.element.outerHeight(true)
+									viewport.scrollTop(scrollTop)
 
 						finalize = (scrolling)->
 							adjustBuffer(scrolling)
@@ -263,17 +256,13 @@ hill30Module
 									(result) ->
 										if result.length == 0
 											eof = true
-											lastScope = $scope
 											console.log "appended: requested #{bufferSize} records starting from #{next} recieved: eof"
 										else
 											clipTop()
 											for item in result
-												lastScope = insert ++next, item
+												insert ++next, item
 											console.log "appended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
-
-										dereg = lastScope.$watch 'adjustBuffer', ->
-											finalize(scrolling)
-											dereg()
+										finalize(scrolling)
 
 							else
 								if buffer.length && !shouldLoadTop()
@@ -284,16 +273,13 @@ hill30Module
 									(result) ->
 										if result.length == 0
 											bof = true
-											lastScope = $scope
 											console.log "prepended: requested #{bufferSize} records starting from #{first-bufferSize} recieved: bof"
 										else
 											clipBottom()
 											for i in [result.length-1..0]
-												lastScope = insert first--, result[i]
+												insert --first, result[i]
 											console.log "prepended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
-										dereg = lastScope.$watch 'adjustBuffer', ->
-											finalize(scrolling)
-											dereg()
+										finalize(scrolling)
 
 						viewport.bind 'resize', ->
 							if !$rootScope.$$phase && !isLoading
