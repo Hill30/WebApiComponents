@@ -1,4 +1,4 @@
-angular.module('app').directive 'select2', [
+hill30Module.directive 'select2', [
 	'$log','$location', '$injector'
 	(console, location, $injector) ->
 		require: 'ngModel'
