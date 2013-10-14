@@ -11,7 +11,7 @@
         "angular": "~1.0.7",
         "angular-resource": "~1.0.7",
 		"bootstrap-datepicker": "~1.0.0",
-        "ngscroller": "git@github.com:Hill30/NGScroller",
+        "ngscroller": "git@github.com:Hill30/NGScroller"
     },
     "ignore": [
         "readme.md"
