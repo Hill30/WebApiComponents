@@ -19,20 +19,18 @@
     /*select2-default*/
 
       /*container*/
-      .select2-container {
+      .select2-container {        
 
-        &[class*="span"] {
-          margin: 0;
+        &.form-control {
+          padding: 0;
         }
 
         .select2-choice {
-          .border-radius(@inputBorderRadius);
-          .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-          .transition(~"border linear .2s, box-shadow linear .2s");
-          #gradient.vertical(@white,@white);
-          filter: none;
-          background-color: @inputBackground;
-          border: 1px solid @inputBorder;
+          .border-radius(0);
+          .box-shadow(none);
+          border: none;
+          height: 32px;
+          background: none;
 
           .select2-arrow {
             .border-radius(0);
@@ -50,7 +48,7 @@
 
             &:before {
               position: absolute;
-              top: 5px;
+              top: 8px;
               right: 7px;
               content: "\f0d7";
               color: @grayLight;
@@ -71,11 +69,12 @@
         }
 
         &.select2-dropdown-open {
-          .select2-choice {
-            .border-radius(@inputBorderRadius @inputBorderRadius 0 0);
-            border-color: @accentColor;
-            border-bottom-color: @white;
 
+          .border-radius(@inputBorderRadius @inputBorderRadius 0 0);
+          border-color: @accentColor;
+          border-bottom-color: @white;
+
+          .select2-choice {
             .select2-arrow {
               &:before {
                 content: "\f0d8";
@@ -137,25 +136,18 @@
 
       /*container*/
       .select2-container.select2-container-multi {
+        height: auto;
+
 
         /*choices*/
         .select2-choices {
-          .border-radius(@inputBorderRadius);
-          .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-          .transition(~"border linear .2s, box-shadow linear .2s");
-          #gradient.vertical(@white, @white);
-          min-height: 28px;
-          margin-bottom: @baseLineHeight / 2;
+          border: none;
+          background: none;
+          min-height: 32px;
           font-size: @baseFontSize;
           line-height: @baseLineHeight;
           color: @gray;
           vertical-align: middle;
-          background-color: @inputBackground;
-          border: 1px solid @inputBorder;
-
-          .select2-container-multi& {
-            min-height: 0;
-          }
 
           /*inn*/
           li {
