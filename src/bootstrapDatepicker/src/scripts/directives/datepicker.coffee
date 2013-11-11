@@ -8,5 +8,6 @@ hill30Module.directive 'datePicker', [
 			element.datepicker( format: 'mm/dd/yyyy' ).on 'changeDate', (e) ->
 				date = ('0' + (e.date.getMonth()+1)).slice(-2) + '/' + ('0' + e.date.getDate()).slice(-2)  + '/' + e.date.getFullYear()
 				scope.$apply () -> parsed.assign(scope, date)
+				scope.$emit("#{attrs.ngModel}Event", { date: date })
 				element.datepicker("hide")
 ]
