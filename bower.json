@@ -6,8 +6,7 @@
     "main": "",
 
     "dependencies": {
-        "jquery-1.10.2": "http://code.jquery.com/jquery-1.10.2.js",
-        "jquery": "~2.0",
+        "jquery": "1.10.2",
         "angular": "~1.0.7",
         "angular-resource": "~1.0.7",
 		"bootstrap-datepicker": "~1.0.0"
