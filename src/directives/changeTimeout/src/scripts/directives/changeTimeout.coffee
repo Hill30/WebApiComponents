@@ -1,4 +1,4 @@
-angular.module('app').directive 'changeTimeout', [
+hill30Module.directive 'changeTimeout', [
   '$log'
   (console) ->
     restrict:'A'
