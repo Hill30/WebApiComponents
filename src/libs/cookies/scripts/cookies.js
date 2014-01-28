@@ -117,12 +117,13 @@
         Cookies._cachedDocumentCookie = Cookies._document.cookie;
     };
 
+    /*
     Cookies._areEnabled = function () {
         return Cookies.set('cookies.js', 1).get('cookies.js') === '1';
     };
 
     Cookies.enabled = Cookies._areEnabled();
-
+    */
     // AMD support
     if (typeof define === 'function' && define.amd) {
         define(function () { return Cookies; });
