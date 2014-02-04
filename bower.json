@@ -8,7 +8,7 @@
     "dependencies": {
         "jquery": "1.10.2",
         "angular": "~1.0.7",
-        "angular-resource": "~1.0.7",
+        "angular-resource": "1.2.10",
 		"bootstrap-datepicker": "~1.0.0"
     },
     "ignore": [
