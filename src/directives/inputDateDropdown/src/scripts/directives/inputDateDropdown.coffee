@@ -1,4 +1,4 @@
-hill30Module.directive 'inputDate-dropdown', () ->
+hill30Module.directive 'inputDateDropdown', () ->
 	inputDateStatic = {}
 
 

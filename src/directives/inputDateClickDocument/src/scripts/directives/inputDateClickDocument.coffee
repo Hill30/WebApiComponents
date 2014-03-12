@@ -1,4 +1,4 @@
-hill30Module.directive 'inputDate-clickDocument', ['$document', '$timeout', ($document, $timeout) ->
+hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', ($document, $timeout) ->
 	inputDateStatic = {}
 
 
