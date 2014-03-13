@@ -1,12 +1,13 @@
-hill30Module.directive 'inputDateDropdown', () ->
+hill30Module.directive 'inputDateDropdown', ['$filter', ($filter) ->
 	inputDateStatic = {}
 
+	inputDateStatic.format = "MM/dd/yyyy"
+	inputDateStatic.mask = "mm/dd/yyyy"
+	inputDateStatic.showWeeks = "false"
+	inputDateStatic.minDate = null
+	inputDateStatic.maxDate = "'2014-06-22'"
 
 	inputDateStatic.generateTemplate = (element, attrs) ->
-		minDate = null
-		maxDate = "'2014-06-22'"
-		format = "MM/dd/yyyy"
-		showWeeks = "false"
 
 		if !attrs.hasOwnProperty('value')
 			console.log('inputDate ng-model binding error (value not declared)')
@@ -19,37 +20,60 @@ hill30Module.directive 'inputDateDropdown', () ->
 		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
 			requiredAttr = 'ng-required="true"'
 
+		if attrs.hasOwnProperty('doEnter')
+			doEnterAttr = 'ng-enter="doEnter()"'
+
+		if attrs.hasOwnProperty('isInvalid')
+			isInvalidAttr = 'ng-class="{ \'form-control-invalid\': isInvalid }"'
+
 		html = '
-				<input 	type="text" class="form-control input-sm"
-						' + (tabindexAttr || '') + '"
-						ng-model="resultValue"
-						date-validator
-						inputmask-date
-						mask="mm/dd/yyyy"/>
+					<input type="text" class="form-control input-sm"
+							ng-model="resultValue"
+							' + tabindexAttr + '
+							' + doEnterAttr + '
+							' + isInvalidAttr + '
+							/>
 
-				<span class="dropdown" data-dropdown-wrapper style="position: absolute;">
-					<a class="dropdown-toggle" data-dropdown-linker>
-						<span class="input-group-btn">
-							<button class="btn btn-default btn-sm" tabindex="-1">
-								<i class="glyphicon glyphicon-calendar"></i>
-							</button>
-						</span>
-					</a>
-					<div class="dropdown-menu">
+					<span class="dropdown" data-dropdown-wrapper style="position: absolute;">
+						<a class="dropdown-toggle" data-dropdown-linker>
+							<span class="input-group-btn">
+								<button class="btn btn-default btn-sm" tabindex="-1">
+									<i class="glyphicon glyphicon-calendar"></i>
+								</button>
+							</span>
+						</a>
+						<div class="dropdown-menu">
 
-						<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
-							<datepicker
-									datepicker-popup="' + (format || '') + '"
-									ng-model="resultValue"
-									show-weeks="' + showWeeks + '">
-							</datepicker>
+							<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
+								<datepicker
+										datepicker-popup="' + inputDateStatic.format + '"
+										ng-model="resultValue"
+										show-weeks="' + inputDateStatic.showWeeks + '">
+								</datepicker>
+							</div>
+
 						</div>
-
-					</div>
-				</span>
-										'
+					</span>
+		'
 
 		return html
+
+
+	inputDateStatic.getValueChain = (targetScope, target) -> #todo dhilt : need to generalize method
+		chain = target.split('.')
+		lastRing = chain[chain.length - 1]
+		src = targetScope;
+
+		for ring in chain
+			if ring is lastRing
+				break
+			if !src.hasOwnProperty(ring)
+				console.log 'Chain walk error: can\'t find "' + ring + '" property within "' + chain + '" chain';
+				return
+			src = src[ring]
+
+		return src[lastRing]
+
 
 	inputDateStatic.commitValueChain = (targetScope, target, value) ->
 		chain = target.split('.')
@@ -75,40 +99,41 @@ hill30Module.directive 'inputDateDropdown', () ->
 
 		scope.resultValue = ''
 
-		scope.showDialog = true
+		scope.format = inputDateStatic.format
 
-		scope.hideDatePicker = () ->
-			scope.showDialog = false
+		self.input = element.find("input")
+		self.input.inputmask(inputDateStatic.mask)
+
+		self.hideDatePicker = () ->
 			if $._data(document, "events").click
 				$._data(document, "events").click[0].handler()
 
-		scope.$watch 'resultValue', (value) ->
-			inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
-			#if scope.showDialog is true
-			scope.hideDatePicker()
-			self.input.focus()
-
-		scope.$watch 'showDialog', (value) ->
-			if value isnt true
-				scope.hideDatePicker()
-
-		self.closeDatePicker = () ->
-			scope.hideDatePicker()
+		doEnter = inputDateStatic.getValueChain(scope.$parent, attrs['doEnter']) if attrs['doEnter']
+		if doEnter
+			scope.doEnter = () ->
+				doEnter.call(scope.$parent)
 
 
 	inputDateStatic.linking = (self) ->
 		scope = self.scope
 		element = self.element
+		attrs = self.attrs
 
-		self.input = element.find("input")
-		self.dropdownWrapper = element.find("[data-dropdown-wrapper]")
+		scope.$watch 'resultValue', (value) ->
+			filteredValue = $filter('date')(value, inputDateStatic.format)
+			scope.resultValue = filteredValue
+			self.input[0].value = filteredValue
+
+			inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
+			self.hideDatePicker()
+			self.input.focus()
 
 		element.bind 'keydown', (event) ->
 			if event.which is 27
-				self.closeDatePicker()
+				self.hideDatePicker()
 				self.input.focus()
 			else if event.which is 9
-				self.closeDatePicker()
+				self.hideDatePicker()
 			return true
 
 
@@ -121,7 +146,9 @@ hill30Module.directive 'inputDateDropdown', () ->
 
 	transclude: true
 
-	scope: {}
+	scope: {
+		isInvalid: '='
+	}
 
 	link: (scope, element, attrs) ->
 		self = {}
@@ -134,4 +161,4 @@ hill30Module.directive 'inputDateDropdown', () ->
 
 	}
 
-
+]

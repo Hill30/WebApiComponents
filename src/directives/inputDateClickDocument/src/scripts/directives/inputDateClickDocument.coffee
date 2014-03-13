@@ -1,13 +1,13 @@
-hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($document, $timeout, $filter) ->
+hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', '$filter', ($document, $timeout, $filter) ->
 	inputDateStatic = {}
 
 	inputDateStatic.format = "MM/dd/yyyy"
 	inputDateStatic.mask = "mm/dd/yyyy"
+	inputDateStatic.showWeeks = "false"
+	inputDateStatic.minDate = null
+	inputDateStatic.maxDate = "'2014-06-22'"
 
 	inputDateStatic.generateTemplate = (element, attrs) ->
-		minDate = null
-		maxDate = "'2014-06-22'"
-		showWeeks = "false"
 
 		if !attrs.hasOwnProperty('value')
 			console.log('inputDate ng-model binding error (value not declared)')
@@ -29,7 +29,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 		html = '
 			<input type="text" class="form-control input-sm"
 					ng-model="resultValue"
-					' + (tabindexAttr || '') + '
+					' + tabindexAttr + '
 					' + doEnterAttr + '
 					' + isInvalidAttr + '
 					/>
@@ -44,11 +44,11 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 				<div class="datepicker-wrap" ng-show="showDialog">
 					<datepicker
 							ng-model="resultValue"
-							show-weeks="' + showWeeks + '">
+							show-weeks="' + inputDateStatic.showWeeks + '">
 					</datepicker>
 				</div>
 			</span>
-		'
+'
 
 		return html
 
