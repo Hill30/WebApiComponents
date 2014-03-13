@@ -50,9 +50,15 @@ $._data(document, "events").click[0].handler()
 
 --------------------------------------------------
 
-Пример использования директив в шаблоне:
+Пример использования директивы в шаблоне:
 
-<input-date-dropdown value="overrides.serviceDate" tabindex="4"></input-date-dropdown>
-<input-date-click-document value="overrides.serviceDate" tabindex="4"></input-date-click-document>
+<input-date
+    value="overrides.serviceDate"
+    tabindex="4"
+    do-enter="updateTimesheetFalse"
+    is-invalid="form.serviceDate.$error.dateValidator && isFormSubmited">
+</input-date>
 
-В контроллере никакого дополнительного кода не нужно.
+, где input-date -- это input-date-dropdown или input-date-click-document.
+
+В контроллере никакого дополнительного кода не нужно. upd: За исключением метода updateTimesheetFalse, чем (в качестве временного решения) замещается прошлый декларативный вызов с параметром: ng-enter="updateTimesheet(false)".
