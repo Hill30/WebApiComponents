@@ -15,13 +15,10 @@ hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', '$fil
 
 		if parseInt(attrs['tabindex']) isnt NaN
 			tabindexAttr = 'tabindex = "' + parseInt(attrs['tabindex']) + '"'
-			element.attr('tabindex', '')
+			element.removeAttr('tabindex')
 
 		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
 			requiredAttr = 'ng-required="true"'
-
-		if attrs.hasOwnProperty('doEnter')
-			doEnterAttr = 'ng-enter="doEnter()"'
 
 		if attrs.hasOwnProperty('isInvalid')
 			isInvalidAttr = 'ng-class="{ \'form-control-invalid\': isInvalid }"'
@@ -29,9 +26,8 @@ hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', '$fil
 		html = '
 			<input type="text" class="form-control input-sm"
 					ng-model="resultValue"
-					' + tabindexAttr + '
-					' + doEnterAttr + '
-					' + isInvalidAttr + '
+					' + (tabindexAttr || '') + '
+					' + (isInvalidAttr || '') + '
 					/>
 
 			<span datepicker-click-wrapper style="position: absolute;">
@@ -106,11 +102,6 @@ hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', '$fil
 			self.input.focus()
 			$timeout () ->
 				scope.showDialog = false
-
-		doEnter = inputDateStatic.getValueChain(scope.$parent, attrs['doEnter']) if attrs['doEnter']
-		if doEnter
-			scope.doEnter = () ->
-				doEnter.call(scope.$parent) # todo dhilt : think about params passing
 
 
 	inputDateStatic.linking = (self) ->

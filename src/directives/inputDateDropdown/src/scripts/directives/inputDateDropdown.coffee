@@ -15,46 +15,42 @@ hill30Module.directive 'inputDateDropdown', ['$filter', ($filter) ->
 
 		if parseInt(attrs['tabindex']) isnt NaN
 			tabindexAttr = 'tabindex = "' + parseInt(attrs['tabindex']) + '"'
-			element.attr('tabindex', '')
+			element.removeAttr('tabindex')
 
 		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
 			requiredAttr = 'ng-required="true"'
-
-		if attrs.hasOwnProperty('doEnter')
-			doEnterAttr = 'ng-enter="doEnter()"'
 
 		if attrs.hasOwnProperty('isInvalid')
 			isInvalidAttr = 'ng-class="{ \'form-control-invalid\': isInvalid }"'
 
 		html = '
-					<input type="text" class="form-control input-sm"
-							ng-model="resultValue"
-							' + tabindexAttr + '
-							' + doEnterAttr + '
-							' + isInvalidAttr + '
-							/>
+			<input type="text" class="form-control input-sm"
+					ng-model="resultValue"
+					' + (tabindexAttr || '') + '
+					' + (isInvalidAttr || '') + '
+					/>
 
-					<span class="dropdown" data-dropdown-wrapper style="position: absolute;">
-						<a class="dropdown-toggle" data-dropdown-linker>
-							<span class="input-group-btn">
-								<button class="btn btn-default btn-sm" tabindex="-1">
-									<i class="glyphicon glyphicon-calendar"></i>
-								</button>
-							</span>
-						</a>
-						<div class="dropdown-menu">
-
-							<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
-								<datepicker
-										datepicker-popup="' + inputDateStatic.format + '"
-										ng-model="resultValue"
-										show-weeks="' + inputDateStatic.showWeeks + '">
-								</datepicker>
-							</div>
-
-						</div>
+			<span class="dropdown" data-dropdown-wrapper style="position: absolute;">
+				<a class="dropdown-toggle" data-dropdown-linker>
+					<span class="input-group-btn">
+						<button class="btn btn-default btn-sm" tabindex="-1">
+							<i class="glyphicon glyphicon-calendar"></i>
+						</button>
 					</span>
-		'
+				</a>
+				<div class="dropdown-menu">
+
+					<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
+						<datepicker
+								datepicker-popup="' + inputDateStatic.format + '"
+								ng-model="resultValue"
+								show-weeks="' + inputDateStatic.showWeeks + '">
+						</datepicker>
+					</div>
+
+				</div>
+			</span>
+'
 
 		return html
 
@@ -107,11 +103,6 @@ hill30Module.directive 'inputDateDropdown', ['$filter', ($filter) ->
 		self.hideDatePicker = () ->
 			if $._data(document, "events").click
 				$._data(document, "events").click[0].handler()
-
-		doEnter = inputDateStatic.getValueChain(scope.$parent, attrs['doEnter']) if attrs['doEnter']
-		if doEnter
-			scope.doEnter = () ->
-				doEnter.call(scope.$parent)
 
 
 	inputDateStatic.linking = (self) ->
