@@ -146,6 +146,10 @@ hill30Module.directive 'inputDateClickDocument', ['$document', '$timeout', '$fil
 				self.unbindClickDocument()
 
 		element.bind 'keydown', (event) ->
+			if event.which is 37
+				self.element.find('[ng-click="move(-1)"]').click()
+			if event.which is 39
+				self.element.find('[ng-click="move(1)"]').click()
 			if event.which is 27
 				self.focusAndCloseDatePickerDialog()
 			else if event.which is 9

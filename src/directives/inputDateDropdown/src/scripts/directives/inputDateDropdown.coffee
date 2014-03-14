@@ -120,6 +120,10 @@ hill30Module.directive 'inputDateDropdown', ['$filter', ($filter) ->
 			self.input.focus()
 
 		element.bind 'keydown', (event) ->
+			if event.which is 37
+				self.element.find('[ng-click="move(-1)"]').click()
+			if event.which is 39
+				self.element.find('[ng-click="move(1)"]').click()
 			if event.which is 27
 				self.hideDatePicker()
 				self.input.focus()
