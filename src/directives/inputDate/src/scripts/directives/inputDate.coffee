@@ -5,8 +5,6 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 	inputDateStatic.mask = "mm/dd/yyyy"
 	inputDateStatic.dateRegexp = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/(199\d)|([2-9]\d{3})$/
 	inputDateStatic.showWeeks = "false"
-	inputDateStatic.minDate = null
-	inputDateStatic.maxDate = "'2014-06-22'"
 
 	inputDateStatic.generateTemplate = (element, attrs) ->
 
@@ -21,9 +19,6 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			tabindexAttr = 'tabindex = "' + parseInt(attrs['tabindex']) + '"'
 			element.removeAttr('tabindex')
 
-		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
-			requiredAttr = 'ng-required="true"'
-
 		if attrs.hasOwnProperty('isInvalid')
 			isInvalidAttr = 'ng-class="{ \'form-control-invalid\': isInvalid }"'
 
@@ -35,40 +30,31 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 					' + (isInvalidAttr || '') + '
 					/>
 
-			<span datepicker-click-wrapper style="position: absolute;">
-				<span class="input-group-btn">
-					<button class="btn btn-default btn-sm" tabindex="-1" ng-click="toggleDatePickerDialog($event)">
-						<i class="glyphicon glyphicon-calendar"></i>
-					</button>
-				</span>
-
-				<div class="datepicker-wrap" ng-show="showDialog">
-					<datepicker
-							ng-model="resultValue"
-							show-weeks="' + inputDateStatic.showWeeks + '">
-					</datepicker>
+			<span data-dropdown-wrapper class="dropdown" style="position: absolute;">
+				<a class="dropdown-toggle">
+					<span class="input-group-btn">
+						<button class="btn btn-default btn-sm" tabindex="-1" data-dropdown-toggler>
+							<i class="glyphicon glyphicon-calendar"></i>
+						</button>
+					</span>
+				</a>
+				<div class="dropdown-menu">
+					<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
+						<datepicker
+								ng-model="resultValue"
+								datepicker-popup="' + inputDateStatic.format + '"
+								show-weeks="' + inputDateStatic.showWeeks + '">
+						</datepicker>
+						<div class="datepicker-button-bar">
+								<a class="btn btn-info btn-sm" ng-click="setToday()" data-dropdown-today>Today</a>
+						</div>
+					</div>
 				</div>
 			</span>
 '
 
 
-	inputDateStatic.getValueChain = (targetScope, target) -> #todo dhilt : need to generalize method
-		chain = target.split('.')
-		lastRing = chain[chain.length - 1]
-		src = targetScope;
-
-		for ring in chain
-			if ring is lastRing
-				break
-			if !src.hasOwnProperty(ring)
-				console.log 'Chain walk error: can\'t find "' + ring + '" property within "' + chain + '" chain';
-				return
-			src = src[ring]
-
-		return src[lastRing]
-
-
-	inputDateStatic.commitValueChain = (targetScope, target, value) -> #todo dhilt : need to generalize method
+	inputDateStatic.commitValueChain = (targetScope, target, value) -> #todo dhilt : think about move to global service
 		chain = target.split('.')
 		lastRing = chain[chain.length - 1]
 		src = targetScope;
@@ -91,31 +77,31 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 		attrs = self.attrs
 
 		scope.resultValue = ''
-		scope.showDialog = false
+		scope.setToday = () ->
+			scope.resultValue = $filter("date")(new Date(), inputDateStatic.format)
 
-		scope.format = inputDateStatic.format
+		self.inputElement = element.find("input")
+		self.inputElement.inputmask(inputDateStatic.mask)
 
-		self.input = element.find("input")
-		self.input.inputmask(inputDateStatic.mask)
+		self.wrapperElement = self.element.find("[data-dropdown-wrapper]")
+		self.togglerElement = self.element.find("[data-dropdown-toggler]")
 
 		if scope.$parent.hasOwnProperty('form') and scope.$parent.form.hasOwnProperty(attrs['name'])
 			self.hasDateInitialized = false
 			self.parentScopeFormElemnt = scope.$parent.form[attrs['name']]
 
-		scope.toggleDatePickerDialog = () ->
-			scope.showDialog = !scope.showDialog
-
 		self.focusAndCloseDatePickerDialog = () ->
-			self.input.focus()
-			$timeout () ->
-				scope.showDialog = false
+			return if !self.wrapperElement.hasClass('open')
+			self.inputElement.focus()
+			self.togglerElement.click()
 
 
 	inputDateStatic.validateAndCommitValue = (self, value) ->
+		scope = self.scope
 		filteredValue = $filter('date')(value, inputDateStatic.format)
 
-		self.scope.resultValue = filteredValue
-		self.input[0].value = filteredValue
+		scope.resultValue = filteredValue
+		self.inputElement[0].value = filteredValue
 
 		if self.parentScopeFormElemnt
 			if self.hasDateInitialized
@@ -124,7 +110,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			else
 				self.hasDateInitialized = true
 
-		inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
+		inputDateStatic.commitValueChain(scope.$parent, self.attrs.value, value)
 
 
 	inputDateStatic.linking = (self) ->
@@ -134,33 +120,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 
 		scope.$watch 'resultValue', (value) ->
 			inputDateStatic.validateAndCommitValue(self, value)
-			if scope.showDialog is true then scope.showDialog = false
-			self.input.focus()
-
-		self.hideDialogByClickAnywhere = (event) ->
-			return if !event
-			if $(event.target).parents("[datepicker-click-wrapper]").length or
-			!$(event.target).parents("html").length #dhilt: year/month pick makes an island
-				event.stopPropagation()
-				event.preventDefault()
-				return
-			$timeout () ->
-				scope.showDialog = false
-
-		self.bindClickDocument = () ->
-			return if self.hasDocumentClickBound
-			self.hasDocumentClickBound = true
-			$document.bind('click', self.hideDialogByClickAnywhere)
-
-		self.unbindClickDocument = () ->
-			self.hasDocumentClickBound = false
-			$document.unbind('click', self.hideDialogByClickAnywhere)
-
-		scope.$watch 'showDialog', (value) ->
-			if value is true
-				self.bindClickDocument()
-			else
-				self.unbindClickDocument()
+			self.focusAndCloseDatePickerDialog()
 
 		element.bind 'keydown', (event) ->
 			if event.which is 37
@@ -170,8 +130,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			if event.which is 27
 				self.focusAndCloseDatePickerDialog()
 			else if event.which is 9
-				if scope.showDialog is true
-					self.focusAndCloseDatePickerDialog()
+				self.focusAndCloseDatePickerDialog()
 			return true
 
 
@@ -197,6 +156,6 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			inputDateStatic.initialize(self)
 			inputDateStatic.linking(self)
 
-		}
+	}
 
 ]
