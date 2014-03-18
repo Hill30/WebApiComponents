@@ -19,15 +19,15 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			tabindexAttr = 'tabindex = "' + parseInt(attrs['tabindex']) + '"'
 			element.removeAttr('tabindex')
 
-		if attrs.hasOwnProperty('isInvalid')
-			isInvalidAttr = 'ng-class="{ \'form-control-invalid\': isInvalid }"'
+		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
+			requiredAttr = 'ng-required="true"'
 
 		html = '
 			<input type="text" class="form-control input-sm"
 					ng-model="resultValue"
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
-					' + (isInvalidAttr || '') + '
+					' + (requiredAttr || '') + '
 					/>
 
 			<span data-dropdown-wrapper class="dropdown" style="position: absolute;">
@@ -143,9 +143,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 
 		transclude: true
 
-		scope: {
-			isInvalid: '='
-		}
+		scope: {}
 
 		link: (scope, element, attrs) ->
 			self = {}
