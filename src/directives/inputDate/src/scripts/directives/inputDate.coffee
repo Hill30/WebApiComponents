@@ -1,4 +1,4 @@
-hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($document, $timeout, $filter) ->
+hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) ->
 	inputDateStatic = {}
 
 	inputDateStatic.format = "MM/dd/yyyy"
