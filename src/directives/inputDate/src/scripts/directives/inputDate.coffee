@@ -139,7 +139,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		element.bind 'keydown', handleKey
 
-		scope.on "$destroy", () ->
+		scope.$on "$destroy", () ->
 			element.unbind 'keydown', handleKey
 
 
