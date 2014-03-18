@@ -23,34 +23,43 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			requiredAttr = 'ng-required="true"'
 
 		html = '
-			<input type="text" class="form-control input-sm"
+			<div class="input-group">
+				<input 
+					type="text" 
+					class="form-control"
 					ng-model="resultValue"
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
 					' + (requiredAttr || '') + '
-					/>
+				/>
 
-			<span data-dropdown-wrapper class="dropdown" style="position: absolute;">
-				<a class="dropdown-toggle ng-binding">
-					<span class="input-group-btn">
-						<button class="btn btn-default btn-sm" tabindex="-1" data-dropdown-toggler>
-							<i class="glyphicon glyphicon-calendar"></i>
-						</button>
-					</span>
-				</a>
-				<div class="dropdown-menu">
-					<div class="datepicker-wrap" ng-click="$event.stopPropagation()" style="position: relative;">
-						<datepicker
-								ng-model="resultValue"
-								datepicker-popup="' + inputDateStatic.format + '"
-								show-weeks="' + inputDateStatic.showWeeks + '">
-						</datepicker>
-						<div class="datepicker-button-bar">
+				<div class="input-group-btn" data-dropdown-wrapper>
+
+					<button type="button" tabindex="-1" class="btn btn-default dropdown-toggle" data-toggle="dropdown"  data-dropdown-toggler>
+						<i class="glyphicon glyphicon-calendar"></i>
+					</button>
+
+					<div class="dropdown-menu pull-right">
+
+						<div class="datepicker-wrap" ng-click="$event.stopPropagation()">
+
+							<datepicker
+							ng-model="resultValue"
+							datepicker-popup="' + inputDateStatic.format + '"
+							show-weeks="' + inputDateStatic.showWeeks + '">
+							</datepicker>
+
+							<div class="datepicker-button-bar">
 								<a class="btn btn-info btn-sm" ng-click="setToday()" data-dropdown-today>Today</a>
+							</div>
+
 						</div>
+
 					</div>
+
 				</div>
-			</span>
+
+			</div>
 '
 
 
