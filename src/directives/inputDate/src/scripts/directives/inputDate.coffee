@@ -31,7 +31,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 					/>
 
 			<span data-dropdown-wrapper class="dropdown" style="position: absolute;">
-				<a class="dropdown-toggle">
+				<a class="dropdown-toggle ng-binding">
 					<span class="input-group-btn">
 						<button class="btn btn-default btn-sm" tabindex="-1" data-dropdown-toggler>
 							<i class="glyphicon glyphicon-calendar"></i>
@@ -126,7 +126,7 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
 				scope.resultValue = options.value
 
-		element.bind 'keydown', (event) ->
+		handleKey = (event) ->
 			if event.which is 37
 				self.element.find('[ng-click="move(-1)"]').click()
 			if event.which is 39
@@ -136,6 +136,11 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			else if event.which is 9
 				self.focusAndCloseDatePickerDialog()
 			return true
+
+		element.bind 'keydown', handleKey
+
+		scope.on "$destroy", () ->
+			element.unbind 'keydown', handleKey
 
 
 	return {
