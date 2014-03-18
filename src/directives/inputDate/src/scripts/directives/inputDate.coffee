@@ -122,6 +122,10 @@ hill30Module.directive 'inputDate', ['$document', '$timeout', '$filter', ($docum
 			inputDateStatic.validateAndCommitValue(self, value)
 			self.focusAndCloseDatePickerDialog()
 
+		if attrs['updateFromCtrl']
+			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
+				scope.resultValue = options.value
+
 		element.bind 'keydown', (event) ->
 			if event.which is 37
 				self.element.find('[ng-click="move(-1)"]').click()
