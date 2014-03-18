@@ -124,7 +124,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		if attrs['updateFromCtrl']
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
-				scope.resultValue = options.value
+				scope.resultValue = if options then options.value else ''
 
 		handleKey = (event) ->
 			if event.which is 37
