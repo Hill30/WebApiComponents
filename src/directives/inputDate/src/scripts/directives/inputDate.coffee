@@ -39,7 +39,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 						<i class="glyphicon glyphicon-calendar"></i>
 					</button>
 
-					<div class="dropdown-menu pull-right">
+					<div class="dropdown-menu">
 
 						<div class="datepicker-wrap" ng-click="$event.stopPropagation()">
 
