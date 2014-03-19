@@ -87,7 +87,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		scope.resultValue = ''
 		scope.setToday = () ->
-			scope.resultValue = $filter("date")(new Date(), inputDateStatic.format)
+			scope.resultValue = new Date()
 
 		self.inputElement = element.find("input")
 		self.inputElement.inputmask(inputDateStatic.mask)
