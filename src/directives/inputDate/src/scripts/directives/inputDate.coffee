@@ -22,6 +22,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs.hasOwnProperty('required') and attrs['required'] isnt "false"
 			requiredAttr = 'ng-required="true"'
 
+		if attrs.hasOwnProperty('ngDisabled')
+			disabledAttr = 'ng-disabled="disabled"'
+
 		html = '
 			<div class="input-group">
 				<input 
@@ -31,11 +34,15 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
 					' + (requiredAttr || '') + '
+					' + (disabledAttr || '') + '
 				/>
 
 				<div class="input-group-btn" data-dropdown-wrapper>
 
-					<button type="button" tabindex="-1" class="btn btn-default dropdown-toggle" data-toggle="dropdown"  data-dropdown-toggler>
+					<button type="button" tabindex="-1" class="btn btn-default dropdown-toggle"
+						data-toggle="dropdown"
+						data-dropdown-toggler
+						' + (disabledAttr || '') + '>
 						<i class="glyphicon glyphicon-calendar"></i>
 					</button>
 
@@ -63,6 +70,25 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 '
 
 
+	inputDateStatic.getValueChain = (targetScope, target) -> #todo dhilt : think about move to global service
+		if target.indexOf('.') is -1
+			return targetScope[target]
+
+		chain = target.split('.')
+		lastRing = chain[chain.length - 1]
+		src = targetScope;
+
+		for ring in chain
+			if ring is lastRing
+				break
+			if !src.hasOwnProperty(ring)
+				console.log 'Chain walk error: can\'t find "' + ring + '" property within "' + chain + '" chain';
+				return
+			src = src[ring]
+
+		return src[lastRing]
+
+
 	inputDateStatic.commitValueChain = (targetScope, target, value) -> #todo dhilt : think about move to global service
 		chain = target.split('.')
 		lastRing = chain[chain.length - 1]
@@ -86,6 +112,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		attrs = self.attrs
 
 		scope.resultValue = ''
+		scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled'])
+
 		scope.setToday = () ->
 			scope.resultValue = new Date()
 
@@ -119,7 +147,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			else
 				self.hasDateInitialized = true
 
-		inputDateStatic.commitValueChain(scope.$parent, self.attrs.value, value)
+		inputDateStatic.commitValueChain(scope.$parent, self.attrs.value, filteredValue)
 
 
 	inputDateStatic.linking = (self) ->
@@ -134,6 +162,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs['updateFromCtrl']
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
 				scope.resultValue = if options then options.value else ''
+
+		if attrs['ngDisabled']
+			scope.$parent.$watch attrs['ngDisabled'], (value) ->
+				scope.disabled = value
 
 		handleKey = (event) ->
 			if event.which is 37
