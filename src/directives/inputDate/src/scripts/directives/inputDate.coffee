@@ -132,7 +132,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			self.togglerElement.click()
 
 
-	inputDateStatic.validateAndCommitValue = (self, value) ->
+	inputDateStatic.prepareValue = (self, value) ->
 		scope = self.scope
 		filteredValue = $filter('date')(value, inputDateStatic.format)
 
@@ -145,8 +145,6 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				self.parentScopeFormElemnt.$setValidity "dateValidator", isValid
 			else
 				self.hasDateInitialized = true
-
-		inputDateStatic.commitValueChain(scope.$parent, self.attrs.value, filteredValue)
 
 
 	inputDateStatic.linking = (self) ->
