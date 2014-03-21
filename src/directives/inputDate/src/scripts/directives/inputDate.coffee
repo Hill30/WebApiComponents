@@ -111,7 +111,6 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element = self.element
 		attrs = self.attrs
 
-		scope.resultValue = ''
 		if attrs['ngDisabled'] then scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled'])
 
 		scope.setToday = () ->
@@ -156,6 +155,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		attrs = self.attrs
 
 		scope.$watch 'resultValue', (value) ->
+			return if value is $filter('date')(scope.resultValue, inputDateStatic.format)
 			inputDateStatic.validateAndCommitValue(self, value)
 			self.focusAndCloseDatePickerDialog()
 
