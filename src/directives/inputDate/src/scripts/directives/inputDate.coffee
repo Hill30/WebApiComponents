@@ -111,6 +111,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element = self.element
 		attrs = self.attrs
 
+		scope.resultValue = ''
+
 		if attrs['ngDisabled'] then scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled'])
 
 		scope.setToday = () ->
