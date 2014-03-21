@@ -155,8 +155,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		attrs = self.attrs
 
 		scope.$watch 'resultValue', (value) ->
-			return if value is $filter('date')(scope.resultValue, inputDateStatic.format)
-			inputDateStatic.validateAndCommitValue(self, value)
+			if typeof value isnt 'string'
+				inputDateStatic.prepareValue(self, value)
+				return
+			inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
 			self.focusAndCloseDatePickerDialog()
 
 		if attrs['updateFromCtrl']
