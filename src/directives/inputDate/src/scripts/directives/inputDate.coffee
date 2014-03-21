@@ -126,7 +126,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		if scope.$parent.hasOwnProperty('form') and scope.$parent.form.hasOwnProperty(attrs['name'])
 			self.hasDateInitialized = false
-			self.parentScopeFormElemnt = scope.$parent.form[attrs['name']]
+			self.parentScopeFormElement = scope.$parent.form[attrs['name']]
 
 		self.focusAndCloseDatePickerDialog = () ->
 			return if !self.wrapperElement.hasClass('open')
@@ -135,18 +135,21 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 
 	inputDateStatic.prepareValue = (self, value) ->
-		scope = self.scope
 		filteredValue = $filter('date')(value, inputDateStatic.format)
-
-		scope.resultValue = filteredValue
+		self.scope.resultValue = filteredValue
 		self.inputElement[0].value = filteredValue
+		inputDateStatic.validateValue(self, filteredValue)
 
-		if self.parentScopeFormElemnt
+
+	inputDateStatic.validateValue = (self, value) ->
+		isValid = true
+		if self.parentScopeFormElement
 			if self.hasDateInitialized
-				isValid = inputDateStatic.dateRegexp.test(filteredValue)
-				self.parentScopeFormElemnt.$setValidity "dateValidator", isValid
+				isValid = inputDateStatic.dateRegexp.test(value)
+				self.parentScopeFormElement.$setValidity "dateValidator", isValid
 			else
 				self.hasDateInitialized = true
+		isValid
 
 
 	inputDateStatic.linking = (self) ->
@@ -158,7 +161,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			if typeof value isnt 'string'
 				inputDateStatic.prepareValue(self, value)
 				return
-			inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
+			if inputDateStatic.validateValue(self, value)
+				inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
 			self.focusAndCloseDatePickerDialog()
 
 		if attrs['updateFromCtrl']
