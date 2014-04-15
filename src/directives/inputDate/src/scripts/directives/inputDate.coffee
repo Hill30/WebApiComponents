@@ -110,33 +110,33 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		return true
 
 
-		inputDateStatic.debounce = (fn, wait) ->
-			args = context = result = timeout = null
+	inputDateStatic.debounce = (fn, wait) ->
+		args = context = result = timeout = null
 
-			ping = () ->
-				result = fn.apply(context, args)
-				context = args = null
+		ping = () ->
+			result = fn.apply(context, args)
+			context = args = null
 
-			cancel = () ->
-				if timeout
-					$timeout.cancel(timeout)
-					timeout = null
+		cancel = () ->
+			if timeout
+				$timeout.cancel(timeout)
+				timeout = null
 
-			wrapper = () ->
-				context = this
-				args = arguments
+		wrapper = () ->
+			context = this
+			args = arguments
+			cancel()
+			timeout = $timeout(ping, wait)
+
+		wrapper.flush = () ->
+			if (context)
 				cancel()
-				timeout = $timeout(ping, wait)
+				ping()
+			else if !timeout
+				ping()
+			result
 
-			wrapper.flush = () ->
-				if (context)
-					cancel()
-					ping()
-				else if !timeout
-					ping()
-				result
-
-			wrapper
+		wrapper
 
 
 	inputDateStatic.initialize = (self) ->
