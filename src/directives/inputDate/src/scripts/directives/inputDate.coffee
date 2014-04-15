@@ -189,42 +189,51 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.prepareValue = (self, value) ->
 		filteredValue = $filter('date')(value, inputDateStatic.format)
-		self.inputElement[0].value = filteredValue
 		self.scope.resultValue = filteredValue
+		self.inputElement[0].value = filteredValue
 		inputDateStatic.validateValue(self, filteredValue)
 
 
 	inputDateStatic.validateValue = (self, value) ->
 		isValid = true
-		if self.parentScopeFormElement
-			if self.hasDateInitialized
-				isValid = inputDateStatic.dateRegexp.test(value)
+		if self.hasDateInitialized or !self.parentScopeFormElement
+			isValid = inputDateStatic.dateRegexp.test(value)
+			if self.parentScopeFormElement
 				self.parentScopeFormElement.$setValidity "dateValidator", isValid
-			else
-				self.hasDateInitialized = true
+		else
+			self.hasDateInitialized = true
 		isValid
 
 
-	inputDateStatic.commitInputValue = (self, doNotDigest) ->
+	inputDateStatic.commitInputValue = (self, commitParams = {}) ->
 		value = self.inputElement[0].value
+		return if not commitParams.doNotCheck and value is self.scope.resultValue
+		self.scope.resultValue = value
 		if inputDateStatic.validateValue(self, value)
 			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
-			if not doNotDigest
-				self.scope.$parent.$digest()
+			self.scope.$parent.$digest() if not commitParams.doNotDigest
 
 
 	inputDateStatic.commitInputValueBy =
 		event: (self) ->
 			(event) ->
-				inputDateStatic.commitInputValue(self)
+				commitParams = {}
+				#because of lost focus changes model (resultValue)
+				commitParams.doNotCheck = true if event.type is 'blur'
+				inputDateStatic.commitInputValue(self, commitParams)
+				return false
 		eventDebounced: (self) ->
-			inputDateStatic.debounce(() ->
+			debouncedCommit = inputDateStatic.debounce(() ->
 				inputDateStatic.commitInputValue(self)
 			, inputDateStatic.getDebouncedInputDelay(self.attrs['autocommit']))
+			(event) ->
+				debouncedCommit()
+				return false
 		enter: (self) ->
 			(event) ->
 				if event.which is 13
 					inputDateStatic.commitInputValue(self)
+					return false
 
 
 	inputDateStatic.linking = (self) ->
@@ -236,7 +245,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		commitBy = inputDateStatic.commitInputValueBy
 
 		if self.autocommit.lostFocus then inputElement.bind 'blur', commitBy.event(self)
-		if self.autocommit.enter then inputElement.bind 'keydown', commitBy.enter(self)
+		if self.autocommit.enter then inputElement.bind 'keyup', commitBy.enter(self)
 		if self.autocommit.input then inputElement.bind 'propertychange keyup paste', commitBy.event(self)
 		else if self.autocommit.debouncedInput then inputElement.bind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
@@ -245,7 +254,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			if typeof value isnt 'string'
 				inputDateStatic.prepareValue(self, value)
 				self.focusAndCloseDatePickerDialog()
-				inputDateStatic.commitInputValue(self, true)
+				inputDateStatic.commitInputValue(self, {
+					doNotCheck: true
+					doNotDigest: true
+				})
 
 		if attrs['updateFromCtrl']
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
@@ -257,6 +269,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				scope.disabled = value
 
 		handleKey = (event) ->
+			return true if event.target.innerHTML is ''
 			if event.which is 37
 				self.element.find('[ng-click="move(-1)"]').click()
 			if event.which is 39
@@ -267,12 +280,12 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				self.focusAndCloseDatePickerDialog()
 			return true
 
-		element.bind 'keydown', handleKey
+		element.bind 'keyup', handleKey
 
 		scope.$on "$destroy", () ->
-			element.unbind 'keydown', handleKey
+			element.unbind 'keyup', handleKey
 			if self.autocommit.lostFocus then inputElement.unbind 'blur', commitBy.event(self)
-			if self.autocommit.enter then inputElement.unbind 'keydown', commitBy.enter(self)
+			if self.autocommit.enter then inputElement.unbind 'keyup', commitBy.enter(self)
 			if self.autocommit.input then inputElement.unbind 'propertychange keyup paste', commitBy.event(self)
 			else if self.autocommit.debouncedInput then inputElement.unbind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
