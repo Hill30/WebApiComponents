@@ -208,8 +208,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 	inputDateStatic.commitInputValue = (self, commitParams = {}) ->
 		value = self.inputElement[0].value
 		return if not commitParams.doNotCheck and value is self.scope.resultValue
-		self.scope.resultValue = value
 		if inputDateStatic.validateValue(self, value)
+			self.scope.resultValue = value
 			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
 			self.scope.$parent.$digest() if not commitParams.doNotDigest
 
@@ -218,7 +218,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		event: (self) ->
 			(event) ->
 				commitParams = {}
-				#because of lost focus changes model (resultValue)
+				#todo dhilt: because of lost focus changes model (resultValue)
 				commitParams.doNotCheck = true if event.type is 'blur'
 				inputDateStatic.commitInputValue(self, commitParams)
 				return false
