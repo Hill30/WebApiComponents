@@ -5,6 +5,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 	inputDateStatic.mask = "mm/dd/yyyy"
 	inputDateStatic.dateRegexp = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/(199\d)|([2-9]\d{3})$/
 	inputDateStatic.showWeeks = "false"
+	inputDateStatic.defaultDebounceDelay = 350
+	inputDateStatic.defaultAutocommit = "lostFocus"
 
 	inputDateStatic.generateTemplate = (element, attrs) ->
 
@@ -25,10 +27,12 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs.hasOwnProperty('ngDisabled')
 			disabledAttr = 'ng-disabled="disabled"'
 
+		attrs['autocommit'] ?= ''
+
 		html = '
 			<div class="input-group">
-				<input 
-					type="text" 
+				<input
+					type="text"
 					class="form-control"
 					ng-model="resultValue"
 					' + (nameAttr || '') + '
@@ -67,7 +71,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				</div>
 
 			</div>
-'
+		'
 
 
 	inputDateStatic.getValueChain = (targetScope, target) -> #todo dhilt : think about move to global service
@@ -106,14 +110,51 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		return true
 
 
+		inputDateStatic.debounce = (fn, wait) ->
+			args = context = result = timeout = null
+
+			ping = () ->
+				result = fn.apply(context, args)
+				context = args = null
+
+			cancel = () ->
+				if timeout
+					$timeout.cancel(timeout)
+					timeout = null
+
+			wrapper = () ->
+				context = this
+				args = arguments
+				cancel()
+				timeout = $timeout(ping, wait)
+
+			wrapper.flush = () ->
+				if (context)
+					cancel()
+					ping()
+				else if !timeout
+					ping()
+				result
+
+			wrapper
+
+
 	inputDateStatic.initialize = (self) ->
 		scope = self.scope
 		element = self.element
 		attrs = self.attrs
 
 		scope.resultValue = ''
-
 		if attrs['ngDisabled'] then scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled'])
+
+		self.autocommit = {}
+		self.autocommit.lostFocus = true if attrs['autocommit'].indexOf('lostFocus') isnt -1
+		self.autocommit.enter = true if attrs['autocommit'].indexOf('enter') isnt -1
+		self.autocommit.input = true if attrs['autocommit'].indexOf('input') isnt -1
+		self.autocommit.debouncedInput = true if attrs['autocommit'].indexOf('debouncedInput') isnt -1
+
+		if !self.autocommit.lostFocus and !self.autocommit.enter and !self.autocommit.input and !self.autocommit.debouncedInput
+			self.autocommit[inputDateStatic.defaultAutocommit] = true
 
 		scope.setToday = () ->
 			scope.resultValue = new Date()
@@ -134,10 +175,22 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			self.togglerElement.click()
 
 
+	inputDateStatic.getDebouncedInputDelay = (param) ->
+		defaultDelay = inputDateStatic.defaultDebounceDelay
+		return defaultDelay if !param
+		str = 'debouncedInput'
+		start = parseInt(param.indexOf(str + '('))
+		end = parseInt(param.indexOf(')'))
+		return defaultDelay if start < 0 or end < 0 or start >= end
+		delay = parseInt(param.substr(start + str.length + 1, end - start - str.length - 1))
+		return defaultDelay if !(delay > 0)
+		delay
+
+
 	inputDateStatic.prepareValue = (self, value) ->
 		filteredValue = $filter('date')(value, inputDateStatic.format)
-		self.scope.resultValue = filteredValue
 		self.inputElement[0].value = filteredValue
+		self.scope.resultValue = filteredValue
 		inputDateStatic.validateValue(self, filteredValue)
 
 
@@ -152,21 +205,51 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		isValid
 
 
+	inputDateStatic.commitInputValue = (self, doNotDigest) ->
+		value = self.inputElement[0].value
+		if inputDateStatic.validateValue(self, value)
+			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
+			if not doNotDigest
+				self.scope.$parent.$digest()
+
+
+	inputDateStatic.commitInputValueBy =
+		event: (self) ->
+			(event) ->
+				inputDateStatic.commitInputValue(self)
+		eventDebounced: (self) ->
+			inputDateStatic.debounce(() ->
+				inputDateStatic.commitInputValue(self)
+			, inputDateStatic.getDebouncedInputDelay(self.attrs['autocommit']))
+		enter: (self) ->
+			(event) ->
+				if event.which is 13
+					inputDateStatic.commitInputValue(self)
+
+
 	inputDateStatic.linking = (self) ->
 		scope = self.scope
 		element = self.element
 		attrs = self.attrs
 
+		inputElement = self.inputElement
+		commitBy = inputDateStatic.commitInputValueBy
+
+		if self.autocommit.lostFocus then inputElement.bind 'blur', commitBy.event(self)
+		if self.autocommit.enter then inputElement.bind 'keydown', commitBy.enter(self)
+		if self.autocommit.input then inputElement.bind 'propertychange keyup paste', commitBy.event(self)
+		else if self.autocommit.debouncedInput then inputElement.bind 'propertychange keyup paste', commitBy.eventDebounced(self)
+
 		scope.$watch 'resultValue', (value) ->
+			#watch is only for pick date
 			if typeof value isnt 'string'
 				inputDateStatic.prepareValue(self, value)
-				return
-			if inputDateStatic.validateValue(self, value)
-				inputDateStatic.commitValueChain(scope.$parent, attrs.value, value)
-			self.focusAndCloseDatePickerDialog()
+				self.focusAndCloseDatePickerDialog()
+				inputDateStatic.commitInputValue(self, true)
 
 		if attrs['updateFromCtrl']
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
+				inputElement[0].value = if options then options.value else ''
 				scope.resultValue = if options then options.value else ''
 
 		if attrs['ngDisabled']
@@ -188,6 +271,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		scope.$on "$destroy", () ->
 			element.unbind 'keydown', handleKey
+			if self.autocommit.lostFocus then inputElement.unbind 'blur', commitBy.event(self)
+			if self.autocommit.enter then inputElement.unbind 'keydown', commitBy.enter(self)
+			if self.autocommit.input then inputElement.unbind 'propertychange keyup paste', commitBy.event(self)
+			else if self.autocommit.debouncedInput then inputElement.unbind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
 
 	return {
