@@ -3,7 +3,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.format = "MM/dd/yyyy"
 	inputDateStatic.mask = "mm/dd/yyyy"
-	inputDateStatic.dateRegexp = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/(199\d)|([2-9]\d{3})$/
+	inputDateStatic.dateRegexp = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/((199\d)|([2-9]\d{3}))$/
 	inputDateStatic.showWeeks = "false"
 	inputDateStatic.defaultDebounceDelay = 350
 	inputDateStatic.defaultAutocommit = "lostFocus"
@@ -218,7 +218,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		event: (self) ->
 			(event) ->
 				commitParams = {}
-				#todo dhilt: because of lost focus changes model (resultValue)
+				#todo dhilt: because of lost focus changes model (resultValue) immediate
+				#thus if we fail date and blur input the exception will throw anyway...
 				commitParams.doNotCheck = true if event.type is 'blur'
 				inputDateStatic.commitInputValue(self, commitParams)
 				return false
