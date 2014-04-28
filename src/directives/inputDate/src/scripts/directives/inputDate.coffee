@@ -3,7 +3,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.format = "MM/dd/yyyy"
 	inputDateStatic.mask = "mm/dd/yyyy"
-	inputDateStatic.dateRegexp = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/((199\d)|([2-9]\d{3}))$/
+	inputDateStatic.dateRegexp = /^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/((199\d)|([2-9]\d{3}))$/
 	inputDateStatic.showWeeks = "false"
 	inputDateStatic.defaultDebounceDelay = 350
 	inputDateStatic.defaultAutocommit = "lostFocus"
@@ -207,7 +207,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.commitInputValue = (self, commitParams = {}) ->
 		value = self.inputElement[0].value
-		return if not commitParams.doNotCheck and value is self.scope.resultValue
+		return if not commitParams.doNotDigest and not commitParams.doNotCheck and value is self.scope.resultValue
 		if inputDateStatic.validateValue(self, value)
 			self.scope.resultValue = value
 			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
