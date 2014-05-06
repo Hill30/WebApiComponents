@@ -1,9 +1,11 @@
-hill30Module.directive 'inputDate', ['$log', '$parse', '$compile', (console, $parse, $compile) ->
+hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $parse, $compile) ->
 	selectBoxStatic = {}
 
 	selectBoxStatic.defaults = {}
 	selectBoxStatic.defaults.viewValueId = "id"
 	selectBoxStatic.defaults.viewValueName = "name"
+	selectBoxStatic.defaults.idListStringPostfix = "IdsStr"
+	selectBoxStatic.defaults.nameListStringPostfix = "NamesStr"
 
 
 	selectBoxStatic.initialize = (self) ->
@@ -12,12 +14,12 @@ hill30Module.directive 'inputDate', ['$log', '$parse', '$compile', (console, $pa
 		if attrs.hasOwnProperty('idListString')
 			self.idListString = attrs.idListString
 		else
-			console.log "Select-box error: id-list-string attribute is lost"
+			self.idListString = attrs.ngModel + selectBoxStatic.defaults.idListStringPostfix
 
 		if attrs.hasOwnProperty('nameListString')
 			self.nameListString = attrs.nameListString
 		else
-			console.log "Select-box error: name-list-string attribute is lost"
+			self.nameListString = attrs.ngModel + selectBoxStatic.defaults.nameListStringPostfix
 
 		if attrs.hasOwnProperty('tabindex')
 			self.tabindex = parseInt(attrs.tabindex, 10)
