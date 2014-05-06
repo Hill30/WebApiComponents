@@ -4,8 +4,8 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 	selectBoxStatic.defaults = {}
 	selectBoxStatic.defaults.viewValueId = "id"
 	selectBoxStatic.defaults.viewValueName = "name"
-	selectBoxStatic.defaults.idListStringPostfix = "IdsStr"
-	selectBoxStatic.defaults.nameListStringPostfix = "NamesStr"
+	selectBoxStatic.defaults.idListStringPostfix = "IdListString"
+	selectBoxStatic.defaults.nameListStringPostfix = "NameListString"
 
 
 	selectBoxStatic.initialize = (self) ->
