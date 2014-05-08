@@ -47,8 +47,8 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 		elements.toggler.append(elements.box)
 		$compile(elements.box.contents())(scope)
 
-		element.dropdownMenu = elements.dropdown.find('.dropdown-menu')
-		element.dropdownMenu.append(element)
+		elements.dropdownMenu = elements.dropdown.find('.dropdown-menu')
+		elements.dropdownMenu.append(element)
 		elements.parent = element.parent().parent().parent()
 
 
