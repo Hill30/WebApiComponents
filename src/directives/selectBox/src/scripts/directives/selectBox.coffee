@@ -45,10 +45,10 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 
 		$compile(elements.dropdown.contents())(scope)
 		elements.toggler.append(elements.box)
-
 		$compile(elements.box.contents())(scope)
-		elements.dropdown.find('.dropdown-menu').append(element)
 
+		element.dropdownMenu = elements.dropdown.find('.dropdown-menu')
+		element.dropdownMenu.append(element)
 		elements.parent = element.parent().parent().parent()
 
 
@@ -78,20 +78,26 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 			if event.which is 13
 				openDropdown()
 
-		handleClick = () ->
+		handleTogglerClick = () ->
 			return if !elements.dropdown.hasClass('open')
 			elements.dropdown.find('select').focus()
+
+		handleDropdownClick = (event) ->
+			event.stopPropagation()
+			return false
 
 		elements.parent.bind 'keydown', handleTabKeyDown
 		elements.parent.bind 'keyup', handleEscKeyUp
 		elements.box.bind 'keyup', handleEnterKeyUp
-		elements.toggler.bind 'click', handleClick
+		elements.toggler.bind 'click', handleTogglerClick
+		elements.dropdownMenu.bind 'click', handleDropdownClick
 
 		self.scope.$on "$destroy", () ->
 			elements.parent.unbind 'keydown', handleTabKeyDown
 			elements.parent.unbind 'keyup', handleEscKeyUp
 			elements.box.unbind 'keyup', handleEnterKeyUp
-			elements.toggler.unbind 'click', handleClick
+			elements.toggler.unbind 'click', handleTogglerClick
+			elements.dropdownMenu.unbind 'click', handleDropdownClick
 
 
 	return {
