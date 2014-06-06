@@ -11,32 +11,34 @@ globals: angular, window
 		element.scrollTop(value)
 
 ###
-hill30Module
+angular.module('ui.scroll', [])
 
-	.directive( 'ngScrollViewport'
+	.directive( 'uiScrollViewport'
 		[ '$log'
-			(console) ->
-				controller:
-					[ '$scope', '$element'
-						(scope, element) -> element
-					]
+			 ->
+					controller:
+						[ '$scope', '$element'
+							(scope, element) -> element
+						]
 
 		])
 
-	.directive( 'ngScroll'
+	.directive( 'uiScroll'
 		[ '$log', '$injector', '$rootScope', '$timeout'
 			(console, $injector, $rootScope, $timeout) ->
-				require: ['?^ngScrollViewport']
+				require: ['?^uiScrollViewport']
 				transclude: 'element'
 				priority: 1000
 				terminal: true
 
-				compile: (element, attr, linker) ->
-					($scope, $element, $attr, controllers) ->
+				compile: (elementTemplate, attr, linker) ->
+					($scope, element, $attr, controllers) ->
 
-						match = $attr.ngScroll.match /^\s*(\w+)\s+in\s+(\w+)\s*$/
+						log = console.debug || console.log
+
+						match = $attr.uiScroll.match /^\s*(\w+)\s+in\s+(\w+)\s*$/
 						if !match
-							throw new Error "Expected ngScroll in form of '_item_ in _datasource_' but got '#{$attr.ngScroll}'"
+							throw new Error "Expected uiScroll in form of '_item_ in _datasource_' but got '#{$attr.uiScroll}'"
 
 						itemName = match[1]
 						datasourceName = match[2]
@@ -50,12 +52,12 @@ hill30Module
 							throw new Error "#{datasourceName} is not a valid datasource" unless isDatasource datasource
 
 						bufferSize = Math.max(3, +$attr.bufferSize || 10)
-						bufferPadding = -> viewport.height() * Math.max(0.1, +$attr.padding || 0.1) # some extra space to initate preload
+						bufferPadding = -> viewport.outerHeight() * Math.max(0.1, +$attr.padding || 0.1) # some extra space to initate preload
 
 						scrollHeight = (elem)->
 							elem[0].scrollHeight ? elem[0].document.documentElement.scrollHeight
 
-						handler = null
+						adapter = null
 
 						# Calling linker is the only way I found to get access to the tag name of the template
 						# to prevent the directive scope from pollution a new scope is created and destroyed
@@ -65,7 +67,7 @@ hill30Module
 
 								repeaterType = template[0].localName
 								if repeaterType in ['dl']
-									throw new Error "ng-scroll directive does not support <#{template[0].localName}> as a repeating tag: #{template[0].outerHTML}"
+									throw new Error "ui-scroll directive does not support <#{template[0].localName}> as a repeating tag: #{template[0].outerHTML}"
 								repeaterType = 'div' if repeaterType not in ['li', 'tr']
 
 								viewport = controllers[0] || angular.element(window)
@@ -94,7 +96,7 @@ hill30Module
 
 								tempScope.$destroy()
 
-								handler =
+								adapter =
 									viewport: viewport
 									topPadding: topPadding.paddingHeight
 									bottomPadding: bottomPadding.paddingHeight
@@ -105,15 +107,43 @@ hill30Module
 									topDataPos: ->
 										topPadding.paddingHeight()
 
-						viewport = handler.viewport
+						viewport = adapter.viewport
 
+						viewportScope = viewport.scope() || $rootScope
+
+						if angular.isDefined($attr.topVisible)
+							topVisibleItem = (item)->
+								viewportScope[$attr.topVisible] = item
+
+						if angular.isDefined($attr.topVisibleElement)
+							topVisibleElement = (element)->
+								viewportScope[$attr.topVisibleElement] = element
+
+						if angular.isDefined($attr.topVisibleScope)
+							topVisibleScope = (scope)->
+								viewportScope[$attr.topVisibleScope] = scope
+
+						topVisible = (item) ->
+							topVisibleItem(item.scope[itemName]) if topVisibleItem
+							topVisibleElement(item.element) if topVisibleElement
+							topVisibleScope(item.scope) if topVisibleScope
+							datasource.topVisible(item) if datasource.topVisible
+
+						if angular.isDefined ($attr.isLoading)
+							loading = (value) ->
+								viewportScope[$attr.isLoading] = value
+								datasource.loading(value) if datasource.loading
+						else
+							loading = (value) ->
+								datasource.loading(value) if datasource.loading
+
+						ridActual = 0
 						first = 1
 						next = 1
 						buffer = []
 						pending = []
 						eof = false
 						bof = false
-						loading = datasource.loading || (value) ->
 						isLoading = false
 
 						#removes items from start (including) through stop (excluding)
@@ -124,186 +154,240 @@ hill30Module
 							buffer.splice start, stop - start
 
 						reload = ->
+							ridActual++
 							first = 1
 							next = 1
 							removeFromBuffer(0, buffer.length)
-							handler.topPadding(0)
-							handler.bottomPadding(0)
+							adapter.topPadding(0)
+							adapter.bottomPadding(0)
 							pending = []
 							eof = false
 							bof = false
-							adjustBuffer(false)
+							adjustBuffer(ridActual, false)
 
 						bottomVisiblePos = ->
-							viewport.scrollTop() + viewport.height()
+							viewport.scrollTop() + viewport.outerHeight()
 
 						topVisiblePos = ->
 							viewport.scrollTop()
 
 						shouldLoadBottom = ->
-							!eof && handler.bottomDataPos() < bottomVisiblePos() + bufferPadding()
+							!eof && adapter.bottomDataPos() < bottomVisiblePos() + bufferPadding()
 
 						clipBottom = ->
 							# clip the invisible items off the bottom
-							bottomHeight = 0 #handler.bottomPadding()
+							bottomHeight = 0 #adapter.bottomPadding()
 							overage = 0
 
 							for i in [buffer.length-1..0]
-								itemHeight = buffer[i].element.outerHeight(true)
-								if handler.bottomDataPos() - bottomHeight - itemHeight > bottomVisiblePos() + bufferPadding()
-									# top boundary of the element is below the bottom of the visible area
-									bottomHeight += itemHeight
+								item = buffer[i]
+								itemTop = item.element.offset().top
+								newRow = rowTop isnt itemTop
+								rowTop = itemTop
+								itemHeight = item.element.outerHeight(true) if newRow
+								if (adapter.bottomDataPos() - bottomHeight - itemHeight > bottomVisiblePos() + bufferPadding())
+									bottomHeight += itemHeight if newRow
 									overage++
 									eof = false
 								else
-									break
+									break if newRow
+									overage++
 
 							if overage > 0
-								handler.bottomPadding(handler.bottomPadding() + bottomHeight)
+								adapter.bottomPadding(adapter.bottomPadding() + bottomHeight)
 								removeFromBuffer(buffer.length - overage, buffer.length)
 								next -= overage
-								console.log "clipped off bottom #{overage} bottom padding #{handler.bottomPadding()}"
+								log "clipped off bottom #{overage} bottom padding #{adapter.bottomPadding()}"
 
 						shouldLoadTop = ->
-							!bof && (handler.topDataPos() > topVisiblePos() - bufferPadding())
+							!bof && (adapter.topDataPos() > topVisiblePos() - bufferPadding())
 
 						clipTop = ->
 							# clip the invisible items off the top
 							topHeight = 0
 							overage = 0
 							for item in buffer
-								itemHeight = item.element.outerHeight(true)
-								if handler.topDataPos() + topHeight + itemHeight < topVisiblePos() - bufferPadding()
-									topHeight += itemHeight
+								itemTop = item.element.offset().top
+								newRow = rowTop isnt itemTop
+								rowTop = itemTop
+								itemHeight = item.element.outerHeight(true) if newRow
+								if (adapter.topDataPos() + topHeight + itemHeight < topVisiblePos() - bufferPadding())
+									topHeight += itemHeight if newRow
 									overage++
 									bof = false
 								else
-									break
+									break if newRow
+									overage++
 							if overage > 0
-								handler.topPadding(handler.topPadding() + topHeight)
+								adapter.topPadding(adapter.topPadding() + topHeight)
 								removeFromBuffer(0, overage)
 								first += overage
-								console.log "clipped off top #{overage} top padding #{handler.topPadding()}"
+								log "clipped off top #{overage} top padding #{adapter.topPadding()}"
 
-						enqueueFetch = (direction, scrolling)->
+						enqueueFetch = (rid, direction, scrolling)->
 							if (!isLoading)
 								isLoading = true
 								loading(true)
 							if pending.push(direction) == 1
-								fetch(scrolling)
+								fetch(rid, scrolling)
+
+						hideElementBeforeAppend = (element) ->
+							element.displayTemp = element.css('display')
+							element.css 'display', 'none'
+
+						showElementAfterRender = (element) ->
+							if element.hasOwnProperty 'displayTemp'
+								element.css 'display', element.displayTemp
 
 						insert = (index, item) ->
 							itemScope = $scope.$new()
 							itemScope[itemName] = item
-							itemScope.$index = index-1
+							toBeAppended = index > first
+							itemScope.$index = index
+							itemScope.$index-- if toBeAppended
 							wrapper =
 								scope: itemScope
-
-							toBeAppended = index > first
 
 							linker itemScope,
 								(clone) ->
 									wrapper.element = clone
 									if toBeAppended
 										if index == next
-											handler.append clone
+											hideElementBeforeAppend clone
+											adapter.append clone
 											buffer.push wrapper
 										else
 											buffer[index-first].element.after clone
 											buffer.splice index-first+1, 0, wrapper
 									else
-										handler.prepend clone
+										hideElementBeforeAppend clone
+										adapter.prepend clone
 										buffer.unshift wrapper
 							{appended: toBeAppended, wrapper: wrapper}
 
 						adjustRowHeight = (appended, wrapper) ->
 							if appended
-								handler.bottomPadding(Math.max(0,handler.bottomPadding() - wrapper.element.outerHeight(true)))
+								adapter.bottomPadding(Math.max(0,adapter.bottomPadding() - wrapper.element.outerHeight(true)))
 							else
 								# an element is inserted at the top
-								newHeight = handler.topPadding() - wrapper.element.outerHeight(true)
+								newHeight = adapter.topPadding() - wrapper.element.outerHeight(true)
 								# adjust padding to prevent it from visually pushing everything down
 								if newHeight >= 0
 									# if possible, reduce topPadding
-									handler.topPadding(newHeight)
+									adapter.topPadding(newHeight)
 								else
 									# if not, increment scrollTop
 									viewport.scrollTop(viewport.scrollTop() + wrapper.element.outerHeight(true))
 
-						adjustBuffer = (scrolling, newItems, finalize)->
-							doAdjustment = ->
-								console.log "top {actual=#{handler.topDataPos()} visible from=#{topVisiblePos()} bottom {visible through=#{bottomVisiblePos()} actual=#{handler.bottomDataPos()}}"
-								if shouldLoadBottom()
-									enqueueFetch(true, scrolling)
-								else
-									enqueueFetch(false, scrolling) if shouldLoadTop()
-								finalize() if finalize
-
-							if newItems
-								$timeout ->
-									for row in newItems
-										adjustRowHeight row.appended, row.wrapper
-									doAdjustment()
+						doAdjustment = (rid, scrolling, finalize)->
+							log "top {actual=#{adapter.topDataPos()} visible from=#{topVisiblePos()} bottom {visible through=#{bottomVisiblePos()} actual=#{adapter.bottomDataPos()}}"
+							if shouldLoadBottom()
+								enqueueFetch(rid, true, scrolling)
 							else
-								doAdjustment()
+								enqueueFetch(rid, false, scrolling) if shouldLoadTop()
+							finalize(rid) if finalize
+							if pending.length == 0
+								topHeight = 0
+								for item in buffer
+									itemTop = item.element.offset().top
+									newRow = rowTop isnt itemTop
+									rowTop = itemTop
+									itemHeight = item.element.outerHeight(true) if newRow
+									if newRow and (adapter.topDataPos() + topHeight + itemHeight < topVisiblePos())
+											topHeight += itemHeight
+									else
+										topVisible(item) if newRow
+										break
 
-						finalize = (scrolling, newItems)->
-							adjustBuffer scrolling, newItems, ->
+						adjustBuffer = (rid, scrolling, newItems, finalize)->
+							if newItems and newItems.length
+								$timeout ->
+									rows = []
+									for row in newItems
+										element = row.wrapper.element
+										showElementAfterRender element
+										itemTop = element.offset().top
+										if rowTop isnt itemTop
+											rows.push(row)
+											rowTop = itemTop
+									for row in rows
+										adjustRowHeight(row.appended, row.wrapper)
+									doAdjustment(rid, scrolling, finalize)
+							else
+								doAdjustment(rid, scrolling, finalize)
+
+						finalize = (rid, scrolling, newItems)->
+							adjustBuffer rid, scrolling, newItems, ->
 								pending.shift()
 								if pending.length == 0
 									isLoading = false
 									loading(false)
 								else
-									fetch(scrolling)
+									fetch(rid, scrolling)
 
-						fetch = (scrolling) ->
+						fetch = (rid, scrolling) ->
 							direction = pending[0]
-							#console.log "Running fetch... #{{true:'bottom', false: 'top'}[direction]} pending #{pending.length}"
+							#log "Running fetch... #{{true:'bottom', false: 'top'}[direction]} pending #{pending.length}"
 							if direction
 								if buffer.length && !shouldLoadBottom()
-									finalize(scrolling)
+									finalize(rid, scrolling)
 								else
-									#console.log "appending... requested #{bufferSize} records starting from #{next}"
+									#log "appending... requested #{bufferSize} records starting from #{next}"
 									datasource.get next, bufferSize,
 									(result) ->
+										return if rid and rid isnt ridActual
 										newItems = []
-										if result.length == 0
+										if result.length < bufferSize
 											eof = true
-											console.log "appended: requested #{bufferSize} records starting from #{next} recieved: eof"
-										else
+											adapter.bottomPadding(0)
+											#log "eof is reached"
+										if result.length > 0
 											clipTop()
 											for item in result
 												newItems.push (insert ++next, item)
-											console.log "appended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
-										finalize(scrolling, newItems)
-
+											#log "appended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
+										finalize(rid, scrolling, newItems)
 							else
 								if buffer.length && !shouldLoadTop()
-									finalize(scrolling)
+									finalize(rid, scrolling)
 								else
-									#console.log "prepending... requested #{size} records starting from #{start}"
+									#log "prepending... requested #{size} records starting from #{start}"
 									datasource.get first-bufferSize, bufferSize,
 									(result) ->
+										return if rid and rid isnt ridActual
 										newItems = []
-										if result.length == 0
+										if result.length < bufferSize
 											bof = true
-											console.log "prepended: requested #{bufferSize} records starting from #{first-bufferSize} recieved: bof"
-										else
-											clipBottom()
+											adapter.topPadding(0)
+											#log "bof is reached"
+										if result.length > 0
+											clipBottom() if buffer.length
 											for i in [result.length-1..0]
 												newItems.unshift (insert --first, result[i])
-											console.log "prepended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
-										finalize(scrolling, newItems)
+											#log "prepended: requested #{bufferSize} received #{result.length} buffer size #{buffer.length} first #{first} next #{next}"
+										finalize(rid, scrolling, newItems)
 
-						viewport.bind 'resize', ->
+						resizeHandler = ->
 							if !$rootScope.$$phase && !isLoading
-								adjustBuffer(false)
+								adjustBuffer(null, false) #todo dhilt : is null rid passing safe for resize, scroll, delete and insert cases?
 								$scope.$apply()
 
-						viewport.bind 'scroll', ->
+						viewport.bind 'resize', resizeHandler
+
+						scrollHandler = ->
 							if !$rootScope.$$phase && !isLoading
-								adjustBuffer(true)
+								adjustBuffer(null, true)
 								$scope.$apply()
+
+						viewport.bind 'scroll', scrollHandler
+
+						wheelHandler = (event) ->
+							scrollTop = viewport[0].scrollTop
+							yMax = viewport[0].scrollHeight - viewport[0].clientHeight
+							if (scrollTop is 0 and not bof) or (scrollTop is yMax and not eof)
+								event.preventDefault()
+
+						viewport.bind 'mousewheel', wheelHandler
 
 						$scope.$watch datasource.revision,
 							-> reload()
@@ -312,7 +396,12 @@ hill30Module
 							eventListener = datasource.scope.$new()
 						else
 							eventListener = $scope.$new()
-						$scope.$on '$destroy', -> eventListener.$destroy()
+
+						$scope.$on '$destroy', ->
+							eventListener.$destroy()
+							viewport.unbind 'resize', resizeHandler
+							viewport.unbind 'scroll', scrollHandler
+							viewport.unbind 'mousewheel', wheelHandler
 
 						eventListener.$on "update.items", (event, locator, newItem)->
 							if angular.isFunction locator
@@ -322,6 +411,7 @@ hill30Module
 							else
 								if 0 <= locator-first-1 < buffer.length
 									buffer[locator-first-1].scope[itemName] = newItem
+							null
 
 						eventListener.$on "delete.items", (event, locator)->
 							if angular.isFunction locator
@@ -338,29 +428,34 @@ hill30Module
 									next--
 
 							item.scope.$index = first + i for item,i in buffer
-							adjustBuffer(false)
+							adjustBuffer(null, false)
 
 						eventListener.$on "insert.item", (event, locator, item)->
 							inserted = []
 							if angular.isFunction locator
-								temp = []
-								temp.unshift item for item in buffer
-								((wrapper)->
-									if newItems = locator wrapper.scope
-										insert = (index, newItem) ->
-											insert index, item
-											next++
-										if isArray newItems
-											inserted.push(insert i+j, item) for item,j in newitems
-										else
-											inserted.push (insert i, newItems)
-								) wrapper for wrapper,i in temp
+#								temp = []
+#								temp.unshift item for item in buffer
+#								((wrapper)->
+#									if newItems = locator wrapper.scope
+#										insert = (index, newItem) ->
+#											insert index, newItem
+#											next++
+#										if isArray newItems
+#											inserted.push(insert i+j, item) for item,j in newitems
+#										else
+#											inserted.push (insert i, newItems)
+#								) wrapper for wrapper,i in temp
+								throw new Error('not implemented - Insert with locator function')
 							else
 								if 0 <= locator-first-1 < buffer.length
 									inserted.push (insert locator, item)
 									next++
 
 							item.scope.$index = first + i for item,i in buffer
-							adjustBuffer(false, inserted)
+							adjustBuffer(null, false, inserted)
 
 		])
+
+###
+//# sourceURL=src/scripts/ui-scroll.js
+###
