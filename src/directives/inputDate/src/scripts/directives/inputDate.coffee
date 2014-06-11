@@ -207,7 +207,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.commitInputValue = (self, commitParams = {}) ->
 		value = self.inputElement[0].value
-		return if not commitParams.doNotDigest and not commitParams.doNotCheck and value is self.scope.resultValue
+		return value is inputDateStatic.getValueChain(self.scope.$parent, self.attrs.value)
 		if inputDateStatic.validateValue(self, value)
 			self.scope.resultValue = value
 			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
@@ -218,9 +218,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		event: (self) ->
 			(event) ->
 				commitParams = {}
-				#todo dhilt: because of lost focus changes model (resultValue) immediate
-				#thus if we fail date and blur input the exception will throw anyway...
-				commitParams.doNotCheck = true if event.type is 'blur'
+				#todo dhilt: if we fail date and then blur input the exception will throw anyway... because of lost focus changes model (resultValue) immediate
 				inputDateStatic.commitInputValue(self, commitParams)
 				return false
 		eventDebounced: (self) ->
@@ -256,7 +254,6 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				inputDateStatic.prepareValue(self, value)
 				self.focusAndCloseDatePickerDialog()
 				inputDateStatic.commitInputValue(self, {
-					doNotCheck: true
 					doNotDigest: true
 				})
 
