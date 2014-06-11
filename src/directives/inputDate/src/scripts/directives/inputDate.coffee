@@ -207,7 +207,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.commitInputValue = (self, commitParams = {}) ->
 		value = self.inputElement[0].value
-		return value is inputDateStatic.getValueChain(self.scope.$parent, self.attrs.value)
+		return if value is inputDateStatic.getValueChain(self.scope.$parent, self.attrs.value)
 		if inputDateStatic.validateValue(self, value)
 			self.scope.resultValue = value
 			inputDateStatic.commitValueChain(self.scope.$parent, self.attrs.value, value)
