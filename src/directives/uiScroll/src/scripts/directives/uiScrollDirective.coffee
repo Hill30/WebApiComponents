@@ -36,7 +36,7 @@ hill30Module
 
 						log = console.debug || console.log
 
-						match = $attr.uiScroll.match /^\s*(\w+)\s+in\s+(\.+)\s*$/
+						match = $attr.uiScroll.match(/^\s*(\w+)\s+in\s+([\w\.]+)\s*$/)
 						if !match
 							throw new Error "Expected uiScroll in form of '_item_ in _datasource_' but got '#{$attr.uiScroll}'"
 
