@@ -49,13 +49,12 @@ hill30Module
 						getValueChain = (targetScope, target) ->
 							return targetScope[target] if target.indexOf('.') is -1
 							chain = target.split('.')
-							lastRing = chain[chain.length - 1]
 							src = targetScope
 							for ring in chain
 								if !src.hasOwnProperty(ring)
 									throw new Error 'Chain walk error: can\'t find "' + ring + '" property within "' + target + '" chain'
 								src = src[ring]
-							return src[lastRing]
+							return src
 
 						datasource = getValueChain($scope, datasourceName)
 
