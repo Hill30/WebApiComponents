@@ -1,0 +1,5 @@
+<div class="popupBox">
+	<div ng-repeat="item in popup.list">
+		<alert type="item.type" close="popup.close(item)">{{item.text}}</alert>
+	</div>
+</div>
