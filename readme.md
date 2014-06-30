@@ -1,4 +1,13 @@
 
+### v0.1.1 release changelog
+
+* http interceptor factory
+
+* debounce factory
+
+* popup directive
+
+
 ### v0.1.0 release changelog
 
 * new <a href="https://github.com/Hill30/WebApiComponents/tree/v0.1.0/src/directives/selectBox">selectBox</a> directive (instead of select2)
