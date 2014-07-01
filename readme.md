@@ -7,6 +7,8 @@
 
 * popup directive
 
+* confirm factory
+
 
 ### v0.1.0 release changelog
 
