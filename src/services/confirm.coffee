@@ -40,8 +40,7 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 
 		$scope.level = if confirmStatic.levels.indexOf(data.level) isnt -1 then data.level else confirmStatic.defaultLevel
 
-	return
-	{
+	return {
 		openDialog: (confirmObj) ->
 			$modal.open
 				template: confirmStatic.getTemplate
