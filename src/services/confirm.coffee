@@ -40,8 +40,8 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 		$scope.level = if confirmStatic.levels.indexOf(data.level) isnt -1 then data.level else confirmStatic.defaultLevel
 
 	confirmStatic.dismissDialog =  (modalInstance, reason) ->
-		confirmStatic.modalInstance = null
 		modalInstance.dismiss(reason)
+		confirmStatic.modalInstance = null
 
 
 	return {
