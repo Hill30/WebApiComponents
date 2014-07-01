@@ -42,7 +42,7 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 
 	return
 	{
-		open: (confirmObj) ->
+		openDialog: (confirmObj) ->
 			$modal.open
 				template: confirmStatic.getTemplate
 
