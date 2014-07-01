@@ -48,6 +48,10 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 				controller: ($scope, $modalInstance) ->
 
 					confirmStatic.setUiData $scope, confirmObj
+					confirmStatic.modalInstance = $modalInstance
+
+					$scope.$on '$routeChangeStart', () ->
+						confirmStatic.modalInstance.dismiss('cancel')
 
 					$scope.do = () ->
 						$modalInstance.dismiss('ok')
