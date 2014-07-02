@@ -11,6 +11,7 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 		doCaptionDefault = 'Ok'
 
 		isEqual = (p1, p2) ->
+			return true if not p1 or not p2
 			return if (p1.type or p2.type) and p1.type isnt p2.type
 			return if (p1.text or p2.text) and p1.text isnt p2.text
 			if p1.isFunctional or p2.isFunctional
@@ -37,7 +38,7 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 					popupObj.doCaption = popupObj.doCaption or doCaptionDefault
 					popupObj.do = () ->
 						$scope.popup.close popupObj
-						popupObj.do.call(popupObj)
+						popupObj.do()
 
 			if popupObj.hideDuplicates
 				for item, index in $scope.popup.list
