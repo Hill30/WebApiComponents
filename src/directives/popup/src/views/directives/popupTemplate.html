@@ -1,5 +1,8 @@
 <div class="popupBox">
 	<div ng-repeat="item in popup.list">
-		<alert type="item.type" close="popup.close(item)">{{item.text}}</alert>
+		<alert type="item.type" close="popup.close(item)">
+			{{item.text}}
+			<a class="btn btn-default btn-sm" href="" ng-show="item.isFunctional" ng-click="item.do()">Own it!</a>
+		</alert>
 	</div>
 </div>
