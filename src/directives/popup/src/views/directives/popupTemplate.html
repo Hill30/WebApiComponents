@@ -2,7 +2,9 @@
 	<div ng-repeat="item in popup.list">
 		<alert type="item.type" close="popup.close(item)">
 			{{item.text}}
-			<a class="btn btn-default btn-sm" href="" ng-show="item.isFunctional" ng-click="item.do()">Own it!</a>
+			<div ng-show="item.isFunctional" class="button">
+				<a class="btn btn-default btn-sm" href="" ng-click="item.do()">{{item.doCaption}}</a>
+			</div>
 		</alert>
 	</div>
 </div>

@@ -8,6 +8,16 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 		$scope.popup.list = []
 		popupIdLast = 0
 		ttlDefault = 1500
+		doCaptionDefault = 'Ok'
+
+		isEqual = (p1, p2) ->
+			return if (p1.type or p2.type) and p1.type isnt p2.type
+			return if (p1.text or p2.text) and p1.text isnt p2.text
+			if p1.isFunctional or p2.isFunctional
+				return if not p2.isFunctional or not p1.isFunctional
+				return if p1.doCaption isnt p2.doCaption
+			return true
+
 
 		$scope.popup.show = (popupObj) ->
 			popupIdLast++
@@ -20,12 +30,22 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 					$scope.popup.close popupObj
 				, ttl)
 
+			if popupObj.isFunctional
+				if not popupObj.do or typeof(popupObj.do) isnt 'function'
+					popupObj.isFunctional = false
+				else
+					popupObj.doCaption = popupObj.doCaption or doCaptionDefault
+					popupObj.do = () ->
+						$scope.popup.close popupObj
+						popupObj.do.call(popupObj)
+
 			if popupObj.hideDuplicates
 				for item, index in $scope.popup.list
-					if item.type is popupObj.type and item.text is popupObj.text
+					if isEqual item, popupObj
 						$scope.popup.close item
 
 			$scope.popup.list.push popupObj
+
 
 		$scope.popup.close = (popupObj) ->
 			for item, index in $scope.popup.list
