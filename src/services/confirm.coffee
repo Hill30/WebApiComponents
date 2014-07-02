@@ -39,10 +39,6 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 		$scope.uiData.do = data.doCaption or confirmStatic.uiDataDefault.do
 		$scope.level = if confirmStatic.levels.indexOf(data.level) isnt -1 then data.level else confirmStatic.defaultLevel
 
-	confirmStatic.dismissDialog =  (modalInstance, reason) ->
-		modalInstance.dismiss(reason)
-		confirmStatic.modalInstance = null
-
 
 	return {
 		openDialog: (confirmObj) ->
@@ -54,17 +50,19 @@ hill30Module.factory 'confirm', ['$modal', ($modal) ->
 					confirmStatic.setUiData $scope, confirmObj
 					confirmStatic.modalInstance = $modalInstance
 
-					$scope.$on '$routeChangeStart', () ->
-						if confirmStatic.modalInstance
-							confirmStatic.dismissDialog $modalInstance, 'cancel'
+					routeChangeStartOff = $scope.$on '$routeChangeStart', () ->
+						routeChangeStartOff()
+						$modalInstance.dismiss('cancel')
 
 					$scope.do = () ->
-						confirmStatic.dismissDialog $modalInstance, 'ok'
+						routeChangeStartOff()
+						$modalInstance.dismiss('ok')
 						if confirmObj.do and typeof confirmObj.do is 'function'
 							confirmObj.do()
 
 					$scope.cancel = () ->
-						confirmStatic.dismissDialog $modalInstance, 'cancel'
+						routeChangeStartOff()
+						$modalInstance.dismiss('cancel')
 						if confirmObj.cancel and typeof confirmObj.cancel is 'function'
 							confirmObj.cancel()
 
