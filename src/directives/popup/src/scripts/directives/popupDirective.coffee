@@ -36,9 +36,9 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 					popupObj.isFunctional = false
 				else
 					popupObj.doCaption = popupObj.doCaption or doCaptionDefault
-					popupObj.do = () ->
+					popupObj.doAction = () ->
 						$scope.popup.close popupObj
-						popupObj.do()
+						popupObj.do.call(popupObj)
 
 			if popupObj.hideDuplicates
 				for item, index in $scope.popup.list
