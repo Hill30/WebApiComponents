@@ -44,6 +44,7 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 				for item, index in $scope.popup.list
 					if isEqual item, popupObj
 						$scope.popup.close item
+						break
 
 			$scope.popup.list.push popupObj
 
