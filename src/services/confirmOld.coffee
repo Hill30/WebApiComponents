@@ -1,4 +1,4 @@
-hill30Module.factory 'confirm', ['$modal', ($modal) ->
+hill30Module.factory 'confirmOld', ['$modal', ($modal) ->
 
 	confirmStatic = {}
 	confirmStatic.levels = ['default', 'danger']
