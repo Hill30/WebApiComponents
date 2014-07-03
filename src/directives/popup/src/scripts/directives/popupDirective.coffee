@@ -47,6 +47,7 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 						break
 
 			$scope.popup.list.push popupObj
+			$scope.$apply()
 
 
 		$scope.popup.close = (popupObj) ->
