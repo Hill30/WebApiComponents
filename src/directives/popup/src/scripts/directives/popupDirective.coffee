@@ -47,7 +47,7 @@ hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 						break
 
 			$scope.popup.list.push popupObj
-			if not $scope.$$phase 
+			if not $scope.$$phase
 				$scope.$apply()
 
 
