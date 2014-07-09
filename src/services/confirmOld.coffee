@@ -1,3 +1,5 @@
+# todo dhilt : need to remove
+
 hill30Module.factory 'confirmOld', ['$modal', ($modal) ->
 
 	confirmStatic = {}
