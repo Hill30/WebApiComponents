@@ -1,6 +1,8 @@
 inputDate + angular bootstrap datepicker fork
 (c) dhilt, 2014
-please, look at original component: http://angular-ui.github.io/bootstrap/
+
+please, look at original component:
+#### http://angular-ui.github.io/bootstrap/
 
 --------------------------------------------------
 
