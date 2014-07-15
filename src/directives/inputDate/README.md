@@ -3,32 +3,56 @@
 
 --------------------------------------------------
 
-### Поведение компонента, поддерживаемое в настоящее время
+### Component behaviour
 
-1. Ввод даты с клавиатуры.
-1.1. Ввод даты в textinput с клавиатуры в заданном формате без открытия попапа.
-1.2. Autocommit (запись значения в модель конечного назначения) вводимой с клавиатуры даты в 4х режимах:
-1.2.1 - мгновенная запись по факту изменения содержимого textinput'a (input);
-1.2.2 - отложенная запись по факту изменения содержимого textinput'a (debouncedInput);
-1.2.3 - мгновенная запись по потере textinput'ом фокуса (lostFocus);
-1.2.4 - мгновенная запись по нажатию на enter (enter)
-1.3. Autocommit-режимы можно комбинировать.
-1.4. Отсутствие явного указания autocommit-режима соотв. случаю lostFocus (значение по умолчанию).
+1. Keyboard only input.
 
-2. Работа с попапом (datepicker).
-2.1. Попап можно открыть только кликом по иконке календаря.
-2.2. Попап закрывается при клике вне себя и при клике по иконке календаря.
-2.3. Попап закрывается при выборе даты.
-2.4. Дата, выбранная в попапе, попадает в textinput в заданном формате.
-2.5. Попап закрывается на нажатию на escape. Коммит даты в textinput не происходит. Фокус остается на textinput.
-2.6. Попап закрывается по нажатию на tab. Коммит даты в textinput не происходит. Фокус смещается согласно элементам внешней формы, как если бы tab всплывал выше.
-2.7. При нажатии left/right внутри попапа осуществляется навигация по месяцам (годам).
-2.8. Кнопка Today, нажатие по которой приводит к выбору (и коммиту) сегодняшней даты и закрытию попапа.
+1.1. Keyboard input in defined format without datepicker popup.
 
-3. Обратная связь с моделью конечного назначения.
-3.1. Непосредственной слежки за изменением значения в исходной модели компонент не ведет.
-3.2. Компонент узнает о внешнем изменении значения только посредством пробрасывания спец. объекта, содержащего сведения о требуемом изменении значения.
-3.3. Также компонент подписан на изменение свойствя ng-disabled, позмоляющее извне управлять блокировкой работы компонента.
+1.2. Autocommit (saving input value in model) in 4 modes:
+
+1.2.1 - immediate save in response to text-input contents changing (input);
+
+1.2.2 - debounced save in response to text-input contents changing (debouncedInput);
+
+1.2.3 - immediate save in response to text-input lost focus (lostFocus);
+
+1.2.4 - immediate save in response to ENTER key pressing (enter)
+
+1.3. Autocommit-modes can be combined.
+
+1.4. If there's no autocommit mode, lostFocus will be mode by default.
+
+
+
+2. Work with popup (datepicker).
+
+2.1. Popup shows only after calendar icon click.
+
+2.2. Popup closes by second click on calendar icon or by click out of popup.
+
+2.3. Popup closes by pick a date within popup.
+
+2.4. Picked date gets into a text-input in defined format.
+
+2.5. Popup closes by ESC key pressing. Date will not commit into text-input. Focus remains at text-input.
+
+2.6. Popup closes by TAB key pressing. Date will not commit into text-input. Focus jupms on control next to date text-input (as if tab-event bubbles).
+
+2.7. There is months/years navigation by LEFT/RIGHT key pressing within popup.
+
+2.8. Click on "Today" button leads to pick (and commit) today date and popup close.
+
+
+3. Feedback with parent (end-use) model.
+
+3.1. Component has an isolate scope. And there is no two-way binding between component date value and parent model date value.
+
+3.2. Direct one-way binding arise from ng-model property. This is a parent model property where will commit data from component.
+
+3.3. Component may know about external (parent model) value changes through special event firing. By this a special object with required data changing comes to component.
+
+3.4. Also component has subscription on ng-disabled.
 
 --------------------------------------------------
 
@@ -54,28 +78,30 @@
 
 2. Модель конечного назначения сообщает компоненту inputDate о изменении значения путем создания/изменения обекта, указанного через свойство "update-from-ctrl". Синтаксис следующий:
 
+```html
 	serviceDateUpdateFire = {
 		value: ""
 	}
+```
 
 конкретно этот пример актуален, когда UI должен позволять очищать дату.
 
 3. Валидация даты по формату в настоящей реализации внесена в код директивы (соответственно директива dateValidator больше не нужна; предлагается в дальнейшем генерализовать валидацию полей ввода путем введения универсального validationService). Всякий раз по записи значения в модель конечного назначения, на scope'е этой модели (а точнее на элементе формы этого scope'а, соответствующем параметру "name") вызывается следующий метод:
 
+```html
 	$setValidity("dateValidator", isValid)
+```
 
 , где isValid - имеет тип boolean. При необходимости наименование валидатора можно параметризировать, чтобы оно также задавалось декларативно через шаблон.
 
 4. Autocommit по отложенному вводу может конфигурироваться параметром задержки. Для этого реализован следующий синтаксис:
 
+```html
 	autocommit="lostFocus, debouncedInput(500)"
+```
 
 Таким образом commit по вводу будет откладываться на полсекунды от момента последнего изменения textinput'а.
 
 
 
 --------------------------------------------------
-
-Описание предыдущих этапов работ над компонентом и связанных с этим трудностей можно найти в соседней ветке:
-
-https://github.com/Hill30/WebApiComponents/blob/dev-datepicker-wrapper/src/directives/inputDate.txt
