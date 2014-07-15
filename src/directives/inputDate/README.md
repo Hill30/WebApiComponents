@@ -5,23 +5,23 @@
 
 ### Component behaviour
 
-1. Keyboard only input.
+* 1. Keyboard only input.
 
-1.1. Keyboard input in defined format without datepicker popup.
++ 1.1. Keyboard input in defined format without datepicker popup.
 
-1.2. Autocommit (saving input value in model) in 4 modes:
++ 1.2. Autocommit (saving input value in model) in 4 modes:
 
-1.2.1 - immediate save in response to text-input contents changing (input);
+- 1.2.1 - immediate save in response to text-input contents changing (input);
 
-1.2.2 - debounced save in response to text-input contents changing (debouncedInput);
+- 1.2.2 - debounced save in response to text-input contents changing (debouncedInput);
 
-1.2.3 - immediate save in response to text-input lost focus (lostFocus);
+- 1.2.3 - immediate save in response to text-input lost focus (lostFocus);
 
-1.2.4 - immediate save in response to ENTER key pressing (enter)
+- 1.2.4 - immediate save in response to ENTER key pressing (enter)
 
-1.3. Autocommit-modes can be combined.
++ 1.3. Autocommit-modes can be combined.
 
-1.4. If there's no autocommit mode, lostFocus will be mode by default.
++ 1.4. If there's no autocommit mode, lostFocus will be mode by default.
 
 
 
