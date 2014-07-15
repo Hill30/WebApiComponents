@@ -11,7 +11,7 @@ hill30Module.service 'cookies', ['$location', '$route'
 			day = '0' + day if day < 10
 			month = '0' + month if month < 10
 			expireDate = new Date((d.getFullYear() + 1), month, day)
-			expire = expireDate if not expire is undefined
+			expire = expireDate if expire is undefined
 			Cookies.set(key, value, { expires: expire })
 
 		getCookie = (key) ->
