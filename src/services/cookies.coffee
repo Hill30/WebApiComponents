@@ -23,10 +23,11 @@ hill30Module.service 'cookies', ['$location', '$route'
 		setRouteParamsCookieName = (name) ->
 			routeParamsCookieName = name
 
-		setRouteParamsToCookie = () ->
+		setRouteParamsToCookie = (options) ->
 			routeParams = $location.search()
-			delete routeParams.offset
-			delete routeParams.count
+			if options and options.exclude and options.exclude.length
+				for param in options.exclude
+					delete routeParams[param]
 			setCookie(routeParamsCookieName, JSON.stringify(routeParams))
 
 		getRouteParamsFromCookie = () ->
