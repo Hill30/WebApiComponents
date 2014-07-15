@@ -18,7 +18,7 @@ hill30Module.service 'cookies', ['$location', '$route'
 			Cookies(key)
 
 		isCookieExists = (token) ->
-			return getCookie(token)
+			return !!getCookie(token)
 
 		setRouteParamsCookieName = (name) ->
 			routeParamsCookieName = name
@@ -30,7 +30,7 @@ hill30Module.service 'cookies', ['$location', '$route'
 			setCookie(routeParamsCookieName, JSON.stringify(routeParams))
 
 		getRouteParamsFromCookie = () ->
-			return if not getCookie(routeParamsCookieName)
+			return if not isCookieExists(routeParamsCookieName)
 			params = JSON.parse(getCookie(routeParamsCookieName))
 			for param in params
 				param = param.toString() if Object.prototype.toString.call(param) is '[object Array]'
@@ -38,6 +38,7 @@ hill30Module.service 'cookies', ['$location', '$route'
 			$route.reload()
 
 		clearRouteParamsCookie = () ->
+			return if not isCookieExists(routeParamsCookieName)
 			setCookie(routeParamsCookieName, '')
 
 		{
