@@ -5,17 +5,17 @@
 
 ### Component behaviour
 
-* 1. Keyboard only input.
+1.  Keyboard only input.
 	+ 1.1. Keyboard input in defined format without datepicker popup.
 	+ 1.2. Autocommit (saving input value in model) in 4 modes:
-		- 1.2.1 - immediate save in response to text-input contents changing (input);
-		- 1.2.2 - debounced save in response to text-input contents changing (debouncedInput);
-		- 1.2.3 - immediate save in response to text-input lost focus (lostFocus);
-		- 1.2.4 - immediate save in response to ENTER key pressing (enter)
+		- immediate save in response to text-input contents changing (input);
+		- debounced save in response to text-input contents changing (debouncedInput);
+		- immediate save in response to text-input lost focus (lostFocus);
+		- immediate save in response to ENTER key pressing (enter)
 	+ 1.3. Autocommit-modes can be combined.
 	+ 1.4. If there's no autocommit mode, lostFocus will be mode by default.
 
-* 2. Work with popup (datepicker).
+2. Work with popup (datepicker).
 	+ 2.1. Popup shows only after calendar icon click.
 	+ 2.2. Popup closes by second click on calendar icon or by click out of popup.
 	+ 2.3. Popup closes by pick a date within popup.
@@ -25,7 +25,7 @@
 	+ 2.7. There is months/years navigation by LEFT/RIGHT key pressing within popup.
 	+ 2.8. Click on "Today" button leads to pick (and commit) today date and popup close.
 
-* 3. Feedback with parent (end-use) model.
+3. Feedback with parent (end-use) model.
 	+ 3.1. Component has an isolate scope. And there is no two-way binding between component date value and parent model date value.
 	+ 3.2. Direct one-way binding arise from ng-model property. This is a parent model property where will commit data from component.
 	+ 3.3. Component may know about external (parent model) value changes through special event firing. By this a special object with required data changing comes to component.
