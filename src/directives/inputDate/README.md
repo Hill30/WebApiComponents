@@ -1,5 +1,6 @@
-﻿inputDate + datepicker
+inputDate + angular bootstrap datepicker fork
 (c) dhilt, 2014
+please, look at original component: http://angular-ui.github.io/bootstrap/
 
 --------------------------------------------------
 
@@ -56,30 +57,24 @@
 1. There is no need to inject additional code in your controller. You may deal with "value"-property of <input-date> as if it was "ng-model"-property of simple <input>. By the way you have to keep in mind that the component has an isolated scope and feedback with end-use model has implement limitations.
 
 2. About two-way binding emulation. This is an example of external date changing (via "update-from-ctrl"-property) when UI has to allow to clear date:
-
-```html
-	$scope.clearDate = function () {
-		$scope.serviceDateUpdateFire = {
-			value: ""
-		}
-	};
-```
-
+ 	```html
+		$scope.clearDate = function () {
+			$scope.serviceDateUpdateFire = {
+				value: ""
+			}
+		};
+	```
 
 3. Validation logic is injected in components code. Each time the value is commiting there calling $setValidity method on parent scope  (specifically on a form element of parent scope, which is relevant to "name"-propery):
-
-```html
-	$setValidity("dateValidator", isValid)
-```
-
-, where isValid - has a boolean type.
+	```html
+		$setValidity("dateValidator", isValid)
+	```
+, where isValid has a boolean type.
 
 4. Autocommit by debounced input may configurate by delay param. There is syntax:
-
-```html
-	autocommit="lostFocus, debouncedInput(500)"
-```
-
+	```html
+		autocommit="lostFocus, debouncedInput(500)"
+	```
 Thus commit by input will be delayed on 0.5 sec from the moment of last text-input changing.
 
 
