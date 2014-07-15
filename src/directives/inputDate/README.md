@@ -25,59 +25,62 @@
 	+ 2.7. There is months/years navigation by LEFT/RIGHT key pressing within popup.
 	+ 2.8. Click on "Today" button leads to pick (and commit) today date and popup close.
 
-3. Feedback with parent (end-use) model.
-	+ 3.1. Component has an isolate scope. And there is no two-way binding between component date value and parent model date value.
-	+ 3.2. Direct one-way binding arise from ng-model property. This is a parent model property where will commit data from component.
-	+ 3.3. Component may know about external (parent model) value changes through special event firing. By this a special object with required data changing comes to component.
-	+ 3.4. Also component has subscription on ng-disabled.
 
---------------------------------------------------
+###  Feedback with parent (end-use) model.
 
-### Пример использования директивы в шаблоне (для serviceTracker'а)
+1. Component has an isolate scope. And there is no two-way binding between component date value and parent model date value.
+
+2. Direct one-way binding arise from ng-model property. This is a parent model property where will commit data from component.
+
+3. Component may know about external (parent model) value changes through special event firing. By this a special object with required data changing comes to component.
+
+
+### Template usage example
 
 ```html
 <input-date
-    value="overrides.serviceDate"
+    value="uiData.serviceDate"
     name="serviceDate"
     tabindex="5"
     autocommit="lostFocus, enter"
     update-from-ctrl="serviceDateUpdateFire"
     ng-disabled="readonly"
-    ng-class="{'input-group-invalid': form.serviceDate.$error.dateValidator && isFormSubmited}"
+    ng-class="{'input-group-invalid': isFormValid}">
 </input-date>
 ```
 
 --------------------------------------------------
 
-### Примечания
+### Additional
 
-1. В контроллере никакого дополнительного кода не нужно. Можно работать со значением ("value") <input-date> так, как если бы это было бы "ng-model" простого <input>. Оданко, следует помнить, что scope input-date изолирован и обратная связь с моделью конечного назначения очень ограничена.
+1. There is no need to inject additional code in your controller. You may deal with "value"-property of <input-date> as if it was "ng-model"-property of simple <input>. By the way you have to keep in mind that the component has an isolated scope and feedback with end-use model has implement limitations.
 
-2. Модель конечного назначения сообщает компоненту inputDate о изменении значения путем создания/изменения обекта, указанного через свойство "update-from-ctrl". Синтаксис следующий:
+2. About two-way binding emulation. This is an example of external date changing (via "update-from-ctrl"-property) when UI has to allow to clear date:
 
 ```html
-	serviceDateUpdateFire = {
-		value: ""
-	}
+	$scope.clearDate = function () {
+		$scope.serviceDateUpdateFire = {
+			value: ""
+		}
+	};
 ```
 
-конкретно этот пример актуален, когда UI должен позволять очищать дату.
 
-3. Валидация даты по формату в настоящей реализации внесена в код директивы (соответственно директива dateValidator больше не нужна; предлагается в дальнейшем генерализовать валидацию полей ввода путем введения универсального validationService). Всякий раз по записи значения в модель конечного назначения, на scope'е этой модели (а точнее на элементе формы этого scope'а, соответствующем параметру "name") вызывается следующий метод:
+3. Validation logic is injected in components code. Each time the value is commiting there calling $setValidity method on parent scope  (specifically on a form element of parent scope, which is relevant to "name"-propery):
 
 ```html
 	$setValidity("dateValidator", isValid)
 ```
 
-, где isValid - имеет тип boolean. При необходимости наименование валидатора можно параметризировать, чтобы оно также задавалось декларативно через шаблон.
+, where isValid - has a boolean type.
 
-4. Autocommit по отложенному вводу может конфигурироваться параметром задержки. Для этого реализован следующий синтаксис:
+4. Autocommit by debounced input may configurate by delay param. There is syntax:
 
 ```html
 	autocommit="lostFocus, debouncedInput(500)"
 ```
 
-Таким образом commit по вводу будет откладываться на полсекунды от момента последнего изменения textinput'а.
+Thus commit by input will be delayed on 0.5 sec from the moment of last text-input changing.
 
 
 
