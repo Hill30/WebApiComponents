@@ -1,5 +1,5 @@
-hill30Module.service 'cookies', ['$location', '$route'
-	($location, $route) ->
+hill30Module.service 'cookies', ['$location'
+	($location) ->
 
 		routeParamsCookieName = 'routeParams'
 
@@ -36,7 +36,6 @@ hill30Module.service 'cookies', ['$location', '$route'
 			for param in params
 				param = param.toString() if Object.prototype.toString.call(param) is '[object Array]'
 			$location.search params
-			$route.reload()
 
 		clearRouteParamsCookie = () ->
 			return if not isCookieExists(routeParamsCookieName)
