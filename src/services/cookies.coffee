@@ -1,6 +1,5 @@
 hill30Module.service 'cookies', ['$location'
 	($location) ->
-
 		routeParamsCookieName = 'routeParams'
 
 		setCookie = (key, value, expire) ->
@@ -19,6 +18,9 @@ hill30Module.service 'cookies', ['$location'
 
 		isCookieExists = (token) ->
 			return !!getCookie(token)
+
+		isRouteParamsCookieExists = () ->
+			return isCookieExists(routeParamsCookieName)
 
 		setRouteParamsCookieName = (name) ->
 			routeParamsCookieName = name
@@ -61,6 +63,7 @@ hill30Module.service 'cookies', ['$location'
 		setCookie: setCookie
 		getCookie: getCookie
 		isCookieExists: isCookieExists
+		isRouteParamsCookieExists: isRouteParamsCookieExists
 		setRouteParamsCookieName: setRouteParamsCookieName
 		putRouteParamsToCookie: putRouteParamsToCookie
 		extractRouteParamsFromCookie: extractRouteParamsFromCookie
