@@ -7,7 +7,7 @@ hill30Module.service 'cookies', ['$location'
 			host = $location.$$host
 			path = absUrl.substr(absUrl.indexOf(host) + host.length)
 			return '/' if not path
-			path = ('/' + path) if path.indexOf('/') not 0
+			path = ('/' + path) if path.indexOf('/') isnt 0
 			path = path.substr(0, path.indexOf('#'))
 
 		setCookie = (key, value, expire) ->
