@@ -40,7 +40,7 @@ hill30Module.service 'cookies', ['$location'
 
 			cookieValue = JSON.stringify(routeParams)
 			return clearRouteParamsCookie() if cookieValue is '{}'
-			
+
 			setCookie(routeParamsCookieName, cookieValue)
 
 		extractRouteParamsFromCookie = (options) ->
@@ -50,7 +50,10 @@ hill30Module.service 'cookies', ['$location'
 
 			if options and options.replace and options.replace.length
 				for token in options.replace
-					$location.search(token, cookieParams[token]).replace() if routeParams[token]
+					if routeParams[token] and cookieParams[token]
+						$location.search(token, cookieParams[token]).replace()
+					else if cookieParams[token]
+						$location.search(token, cookieParams[token])
 				return
 
 			if options and options.exclude and options.exclude.length
