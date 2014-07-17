@@ -42,18 +42,19 @@ hill30Module.service 'cookies', ['$location'
 
 		extractRouteParamsFromCookie = (options) ->
 			return if not isCookieExists(routeParamsCookieName)
-			params = JSON.parse(getCookie(routeParamsCookieName))
+			cookieParams = JSON.parse(getCookie(routeParamsCookieName))
+			routeParams = $location.search()
 
 			if options and options.replace and options.replace.length
 				for token in options.replace
-					$location.search(token, params[token]).replace() if params[token]
+					$location.search(token, cookieParams[token]).replace() if routeParams[token]
 				return
 
 			if options and options.exclude and options.exclude.length
 				for token in options.exclude
-					delete params[token]
+					delete cookieParams[token]
 
-			$location.search params
+			$location.search cookieParams
 
 		clearRouteParamsCookie = () ->
 			return if not isCookieExists(routeParamsCookieName)
