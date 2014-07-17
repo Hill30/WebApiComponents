@@ -2,16 +2,27 @@ hill30Module.service 'cookies', ['$location'
 	($location) ->
 		routeParamsCookieName = 'routeParams'
 
+		getPath = () ->
+			absUrl = $location.$$absUrl
+			host = $location.$$host
+			path = absUrl.substr(absUrl.indexOf(host) + host.length)
+			return '/' if not path
+			path = ('/' + path) if path.indexOf('/') not 0
+			path = path.substr(0, path.indexOf('#'))
+
 		setCookie = (key, value, expire) ->
-			# Generate expire date (now + year)
-			d = new Date();
-			month = d.getMonth() + 1;
-			day = d.getDate();
-			day = '0' + day if day < 10
-			month = '0' + month if month < 10
-			expireDate = new Date((d.getFullYear() + 1), month, day)
-			expire = expireDate if expire is undefined
-			Cookies.set(key, value, { expires: expire })
+			options = {}
+			if expire is undefined
+				# Generate expire date (now + year)
+				d = new Date();
+				month = d.getMonth() + 1;
+				day = d.getDate();
+				day = '0' + day if day < 10
+				month = '0' + month if month < 10
+				expire = new Date((d.getFullYear() + 1), month, day)
+			options.expires = expire
+			options.path = getPath()
+			Cookies.set(key, value, options)
 
 		getCookie = (key) ->
 			Cookies(key)
