@@ -5,7 +5,9 @@ hill30Module.service 'cookies', ['$location'
 		getPath = () ->
 			absUrl = $location.$$absUrl
 			host = $location.$$host
+			port = $location.$$port.toString()
 			path = absUrl.substr(absUrl.indexOf(host) + host.length)
+			path = path.substr(port.length + 1) if port
 			return '/' if not path
 			path = ('/' + path) if path.indexOf('/') isnt 0
 			path = path.substr(0, path.indexOf('#'))
