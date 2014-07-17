@@ -38,7 +38,10 @@ hill30Module.service 'cookies', ['$location'
 				for token in options.exclude
 					delete routeParams[token]
 
-			setCookie(routeParamsCookieName, JSON.stringify(routeParams))
+			cookieValue = JSON.stringify(routeParams)
+			return clearRouteParamsCookie() if cookieValue is '{}'
+			
+			setCookie(routeParamsCookieName, cookieValue)
 
 		extractRouteParamsFromCookie = (options) ->
 			return if not isCookieExists(routeParamsCookieName)
