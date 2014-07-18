@@ -23,7 +23,7 @@
 
 ### v0.1.0 release changelog
 
-* new <a href="https://github.com/Hill30/WebApiComponents/tree/v0.1.0/src/directives/selectBox">selectBox</a> directive (instead of select2)
+* new <a href="https://github.com/Hill30/WebApiComponents/tree/master/src/directives/selectBox">selectBox</a> directive (instead of select2)
 
 * minor but really countless updates within <a href="https://github.com/Hill30/WebApiComponents/tree/v0.1.0/src/directives/inputDate">inputDate</a> directive
 

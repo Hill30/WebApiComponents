@@ -1,4 +1,4 @@
-inputDate + angular bootstrap datepicker fork
+﻿inputDate + angular bootstrap datepicker fork
 (c) dhilt, 2014
 
 please, look at original component:
@@ -29,7 +29,7 @@ please, look at original component:
 	+ 2.8. Click on "Today" button leads to pick (and commit) today date and popup close.
 
 
-###  Feedback with parent (end-use) model.
+###  Feedback with parent (end-use) model
 
 1. Component has an isolate scope. And there is no two-way binding between component date value and parent model date value.
 
