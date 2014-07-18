@@ -1,4 +1,15 @@
 
+### v0.1.1+ release changelog
+
+* jquery_inputmask plugin upd. (0.1.2)
+
+* new cookies service (0.1.3)
+
+* httpInterceptor error statuses which has to be ignored option (0.1.4)
+
+* cookies refactor and updates (0.1.4)
+
+
 ### v0.1.1 release changelog
 
 * http interceptor factory
