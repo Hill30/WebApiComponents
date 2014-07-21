@@ -65,7 +65,9 @@ hill30Module.service 'cookies', ['$location'
 				for token in options.replace
 					if routeParams[token] and cookieParams[token]
 						$location.search(token, cookieParams[token]).replace()
-					else if cookieParams[token]
+					else if routeParams[token] and not cookieParams[token]
+						$location.search(token, null).replace()
+					else if not routeParams[token] and cookieParams[token]
 						$location.search(token, cookieParams[token])
 				return
 
