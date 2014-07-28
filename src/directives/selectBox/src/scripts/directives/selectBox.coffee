@@ -24,6 +24,9 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 		if attrs.hasOwnProperty('tabindex')
 			self.tabindex = parseInt(attrs.tabindex, 10)
 
+		if attrs.hasOwnProperty('dynamicSize')
+			self.dynamicSize = attrs['dynamicSize']
+
 		self.viewValueName = attrs.viewValueName || selectBoxStatic.defaults.viewValueName
 		self.viewValueId = attrs.viewValueId || selectBoxStatic.defaults.viewValueId
 
@@ -51,6 +54,11 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 		elements.dropdownMenu.append(element)
 		elements.parent = element.parent().parent().parent()
 
+	selectBoxStatic.getValueChain = (targetScope, target) ->
+		return null if not targetScope
+		chain = target.match(/^([\w]+)\.(.+)$/)
+		return targetScope[target] if not chain or chain.length isnt 3
+		return selectBoxStatic.getValueChain(targetScope[chain[1]], chain[2])
 
 	selectBoxStatic.linking = (self) ->
 		elements = self.elements
@@ -92,6 +100,10 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 		elements.toggler.bind 'click', handleTogglerClick
 		elements.dropdownMenu.bind 'click', handleDropdownClick
 
+		if self.dynamicSize
+			self.scope.$watch self.dynamicSize, () ->
+				self.element.attr('size', selectBoxStatic.getValueChain(self.scope, self.attrs['dynamicSize']))
+
 		self.scope.$on "$destroy", () ->
 			elements.parent.unbind 'keydown', handleTabKeyDown
 			elements.parent.unbind 'keyup', handleEscKeyUp
@@ -102,33 +114,32 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 
 	return {
 
-		restrict: 'A'
+	restrict: 'A'
 
-		require: 'ngModel'
+	require: 'ngModel'
 
-		link: (scope, element, attrs, ctrl) ->
+	link: (scope, element, attrs, ctrl) ->
+		self = {}
+		self.scope = scope
+		self.element = element
+		self.attrs = attrs
+		self.ctrl = ctrl
+		self.elements = {}
 
-			self = {}
-			self.scope = scope
-			self.element = element
-			self.attrs = attrs
-			self.ctrl = ctrl
-			self.elements = {}
+		selectBoxStatic.initialize(self)
+		selectBoxStatic.generateTemplate(self)
+		selectBoxStatic.linking(self)
 
-			selectBoxStatic.initialize(self)
-			selectBoxStatic.generateTemplate(self)
-			selectBoxStatic.linking(self)
-
-			ctrl.$parsers.unshift (viewValue) ->
-				namesArr = []
-				idsArr = []
-				for item in viewValue
-					idsArr.push(item[self.viewValueId]) if item.hasOwnProperty(self.viewValueId)
-					namesArr.push(item[self.viewValueName]) if item.hasOwnProperty(self.viewValueName)
-				scope[self.idListString] = idsArr.toString()
-				scope[self.nameListString] = namesArr.toString()
-				$compile(self.elements.box.contents())(scope)
-				viewValue
+		ctrl.$parsers.unshift (viewValue) ->
+			namesArr = []
+			idsArr = []
+			for item in viewValue
+				idsArr.push(item[self.viewValueId]) if item.hasOwnProperty(self.viewValueId)
+				namesArr.push(item[self.viewValueName]) if item.hasOwnProperty(self.viewValueName)
+			scope[self.idListString] = idsArr.toString()
+			scope[self.nameListString] = namesArr.toString()
+			$compile(self.elements.box.contents())(scope)
+			viewValue
 
 	}
 
