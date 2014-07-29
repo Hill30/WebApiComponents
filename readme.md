@@ -9,6 +9,8 @@
 
 * cookies refactor and updates (0.1.4)
 
+* new typeahead directive (0.1.5)
+
 
 ### v0.1.1 release changelog
 
