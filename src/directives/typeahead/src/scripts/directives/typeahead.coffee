@@ -4,7 +4,7 @@ hill30Module.directive "typeahead", ["$timeout", ($timeout) ->
 	transclude: true
 	replace: true
 
-	template: "<div><form><input ng-model=\"term\" ng-change=\"query()\" type=\"text\" autocomplete=\"off\" /></form><div ng-transclude></div></div>"
+	template: "<div><form><input ng-model=\"term\" ng-change=\"query()\" type=\"text\" autocomplete=\"off\" class=\"form-control input-sm\"/></form><div ng-transclude></div></div>"
 
 	scope:
 		search: "&"
