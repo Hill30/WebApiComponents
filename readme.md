@@ -11,6 +11,8 @@
 
 * new typeahead directive (0.1.5)
 
+* major cookies upd. (prefix instead of path in routeParams cookie) (0.1.6)
+
 
 ### v0.1.1 release changelog
 
