@@ -1,18 +1,19 @@
 hill30Module.service 'cookies', ['$location'
 	($location) ->
-		routeParamsCookieName = 'routeParams'
+		routeParamsCookiePrefix = 'routeParams'
 
-		getPath = () ->
+		getRouteParamsCookieName = () ->
 			absUrl = $location.$$absUrl
 			host = $location.$$host
 			port = $location.$$port.toString()
 			path = absUrl.substr(absUrl.indexOf(host) + host.length)
-			path = path.substr(port.length + 1) if port
+			path = path.substr(port.length + 1) if path.indexOf(':' + port) is 0
 			return '/' if not path
 			path = ('/' + path) if path.indexOf('/') isnt 0
 			path = path.substr(0, path.indexOf('#'))
+			return (routeParamsCookiePrefix + path.replace(/\//g, '_'))
 
-		setCookie = (key, value, expire) ->
+		setCookie = (name, value, expire) ->
 			options = {}
 			if expire is undefined
 				# Generate expire date (now + year)
@@ -23,8 +24,7 @@ hill30Module.service 'cookies', ['$location'
 				month = '0' + month if month < 10
 				expire = new Date((d.getFullYear() + 1), month, day)
 			options.expires = expire
-			options.path = getPath()
-			Cookies.set(key, value, options)
+			Cookies.set(name, value, options)
 
 		getCookie = (key) ->
 			Cookies(key)
@@ -33,10 +33,10 @@ hill30Module.service 'cookies', ['$location'
 			return !!getCookie(token)
 
 		isRouteParamsCookieExists = () ->
-			return isCookieExists(routeParamsCookieName)
+			return isCookieExists(getRouteParamsCookieName())
 
-		setRouteParamsCookieName = (name) ->
-			routeParamsCookieName = name
+		setRouteParamsCookiePrefix = (prefix) ->
+			routeParamsCookiePrefix = prefix
 
 		putRouteParamsToCookie = (options) ->
 			routeParams = $location.search()
@@ -54,11 +54,11 @@ hill30Module.service 'cookies', ['$location'
 			cookieValue = JSON.stringify(routeParams)
 			return clearRouteParamsCookie() if cookieValue is '{}'
 
-			setCookie(routeParamsCookieName, cookieValue)
+			setCookie(getRouteParamsCookieName(), cookieValue)
 
 		extractRouteParamsFromCookie = (options) ->
-			return if not isCookieExists(routeParamsCookieName)
-			cookieParams = JSON.parse(getCookie(routeParamsCookieName))
+			return if not isRouteParamsCookieExists()
+			cookieParams = JSON.parse(getCookie(getRouteParamsCookieName()))
 			routeParams = $location.search()
 
 			if options and options.replace and options.replace.length
@@ -78,15 +78,15 @@ hill30Module.service 'cookies', ['$location'
 			$location.search cookieParams
 
 		clearRouteParamsCookie = () ->
-			return if not isCookieExists(routeParamsCookieName)
-			setCookie(routeParamsCookieName, '')
+			return if not isCookieExists(routeParamsCookiePrefix)
+			setCookie(routeParamsCookiePrefix, '')
 
 		{
 		setCookie: setCookie
 		getCookie: getCookie
 		isCookieExists: isCookieExists
 		isRouteParamsCookieExists: isRouteParamsCookieExists
-		setRouteParamsCookieName: setRouteParamsCookieName
+		setRouteParamsCookieName: setRouteParamsCookiePrefix
 		putRouteParamsToCookie: putRouteParamsToCookie
 		extractRouteParamsFromCookie: extractRouteParamsFromCookie
 		clearRouteParamsCookie: clearRouteParamsCookie
