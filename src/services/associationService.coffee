@@ -22,7 +22,7 @@ hill30Module.service('associationService', ['$log', (console) ->
 			when 8 then text = "associationService.filterList() 2nd argument isn't an array"
 			when 9 then text = "associationService.getFilteredTokenLists() 1st argument isn't an array"
 			when 10 then text = "associationService.getFilteredTokenLists() 2nd argument isn't an array"
-		console text
+		console.warn text
 
 	addItem = (array, itemToAdd, token = defaults.token) ->
 		return warning(1) if not angular.isArray(array)
