@@ -1,6 +1,15 @@
 hill30Module.service('associationService', ['$log', (console) ->
 
+	defaults =
+		logging: true
+		token: 'id'
+
+	initialize = (options) ->
+		defaults.logging = options.logging if options and options.hasOwnProperty('logging')
+		defaults.token = options.token if options and options.hasOwnProperty('token')
+
 	warning = (code) ->
+		return if not defaults.logging
 		text = "associationService undefined error"
 		switch code
 			when 1 then text = "associationService.addItem() 1st argument isn't an array"
@@ -13,9 +22,9 @@ hill30Module.service('associationService', ['$log', (console) ->
 			when 8 then text = "associationService.filterList() 2nd argument isn't an array"
 			when 9 then text = "associationService.getFilteredTokenLists() 1st argument isn't an array"
 			when 10 then text = "associationService.getFilteredTokenLists() 2nd argument isn't an array"
-		log text
+		console text
 
-	addItem = (array, itemToAdd, token = 'id') ->
+	addItem = (array, itemToAdd, token = defaults.token) ->
 		return warning(1) if not angular.isArray(array)
 		return warning(2) if not angular.isObject(itemToAdd)
 		return warning(3) if not itemToAdd.hasOwnProperty(token)
@@ -24,7 +33,7 @@ hill30Module.service('associationService', ['$log', (console) ->
 			return if item[token] is itemToAdd[token]
 		array.push itemToAdd
 
-	removeItem = (array, itemToRemove, token = 'id') ->
+	removeItem = (array, itemToRemove, token = defaults.token) ->
 		return warning(4) if not angular.isArray(array)
 		return warning(5) if not angular.isObject(itemToRemove)
 		return warning(6) if not itemToRemove.hasOwnProperty(token)
@@ -42,7 +51,7 @@ hill30Module.service('associationService', ['$log', (console) ->
 				return false if val1 is val2
 			return true
 
-	getFilteredTokenLists = (objectList, tokenList, token = 'id') ->
+	getFilteredTokenLists = (objectList, tokenList, token = defaults.token) ->
 		return warning(9) if not angular.isArray(objectList)
 		return warning(10) if not angular.isArray(tokenList)
 
@@ -59,6 +68,7 @@ hill30Module.service('associationService', ['$log', (console) ->
 
 
 	return {
+		initialize: initialize
 		addItem: addItem
 		removeItem: removeItem
 		getFilteredTokenLists: getFilteredTokenLists
