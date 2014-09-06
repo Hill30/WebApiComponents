@@ -80,12 +80,11 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		chain = target.split('.')
 		lastRing = chain[chain.length - 1]
-		src = targetScope;
+		src = targetScope
 
 		for ring in chain
-			if ring is lastRing
-				break
-			if !src.hasOwnProperty(ring)
+			break if ring is lastRing
+			if !angular.isDefined(src[ring])
 				console.log 'Chain walk error: can\'t find "' + ring + '" property within "' + chain + '" chain';
 				return
 			src = src[ring]
@@ -96,12 +95,11 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 	inputDateStatic.commitValueChain = (targetScope, target, value) -> #todo dhilt : think about move to global service
 		chain = target.split('.')
 		lastRing = chain[chain.length - 1]
-		src = targetScope;
+		src = targetScope
 
 		for ring in chain
-			if ring is lastRing
-				break
-			if !src.hasOwnProperty(ring)
+			break if ring is lastRing
+			if !angular.isDefined(src[ring])
 				console.log 'Chain walk error: can\'t find "' + ring + '" property within "' + chain + '" chain';
 				return false
 			src = src[ring]
