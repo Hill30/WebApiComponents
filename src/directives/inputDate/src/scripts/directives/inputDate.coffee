@@ -155,6 +155,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			self.autocommit[inputDateStatic.defaultAutocommit] = true
 
 		scope.setToday = () ->
+			# todo dhilt : i don't know why angular don't set $dirty after Today-click automatically...
+			scope.$parent.form.$dirty = true if scope.$parent.hasOwnProperty('form')
+			self.parentScopeFormElement.$dirty = true if self.parentScopeFormElement
 			scope.resultValue = new Date()
 
 		self.inputElement = element.find("input")
