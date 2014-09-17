@@ -1,0 +1,1 @@
+hill30Module = angular.module('hill30', [])
