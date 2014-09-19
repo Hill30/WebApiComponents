@@ -44,6 +44,7 @@ please, look at original component:
 <input-date
     value="uiData.serviceDate"
     name="serviceDate"
+    form-name="mainForm"
     tabindex="5"
     autocommit="lostFocus, enter"
     update-from-ctrl="serviceDateUpdateFire"
@@ -73,11 +74,13 @@ please, look at original component:
 	```
 , where isValid has a boolean type.
 
-4. Autocommit by debounced input may configurate by delay param. There is syntax:
+4. Autocommit by debounced input may be configurated with delay param. There is syntax:
 	```html
 		autocommit="lostFocus, debouncedInput(500)"
 	```
 Thus commit by input will be delayed on 0.5 sec from the moment of last text-input changing.
+
+5. "Name" and "formName" attrs are the forms params. So your input-date has to be wrapped by <form name="mainForm"> in your template. And something like $scope.mainForm.serviceDate will be accessible in your controller.
 
 
 
