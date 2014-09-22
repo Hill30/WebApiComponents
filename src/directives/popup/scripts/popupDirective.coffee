@@ -1,6 +1,6 @@
 hill30Module.directive 'popup', ['$timeout', ($timeout) ->
 	restrict: 'AE'
-	templateUrl: 'views/vendors/Hill30/popupTemplate.html'
+	templateUrl: 'vendors/Hill30/src/directives/popup/views/popupTemplate.html'
 	replace: true
 	transclude: true
 	link: ($scope, element, attrs, controller) ->
