@@ -44,6 +44,7 @@ please, look at original component:
 <input-date
     value="uiData.serviceDate"
     name="serviceDate"
+    form-name="mainForm"
     tabindex="5"
     autocommit="lostFocus, enter"
     update-from-ctrl="serviceDateUpdateFire"
@@ -56,7 +57,7 @@ please, look at original component:
 
 ### Additional
 
-1. There is no need to inject additional code in your controller. You may deal with "value"-property of <input-date> as if it was "ng-model"-property of simple <input>. By the way you have to keep in mind that the component has an isolated scope and feedback with end-use model has implement limitations.
+1. There is no need to inject additional code in your controller. You may deal with "value"-property of \<input-date\> as if it was "ng-model"-property of simple \<input\>. By the way you have to keep in mind that the component has an isolated scope and feedback with end-use model has implement limitations.
 
 2. About two-way binding emulation. This is an example of external date changing (via "update-from-ctrl"-property) when UI has to allow to clear date:
  	```html
@@ -73,11 +74,13 @@ please, look at original component:
 	```
 , where isValid has a boolean type.
 
-4. Autocommit by debounced input may configurate by delay param. There is syntax:
+4. Autocommit by debounced input may be configurated with delay param. There is syntax:
 	```html
 		autocommit="lostFocus, debouncedInput(500)"
 	```
 Thus commit by input will be delayed on 0.5 sec from the moment of last text-input changing.
+
+5. "Name" and "formName" attrs are the forms params. So your input-date has to be wrapped by \<form name="mainForm"\> in your template. And something like $scope.mainForm.serviceDate will be accessible in your controller.
 
 
 

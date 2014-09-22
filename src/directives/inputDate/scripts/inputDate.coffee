@@ -143,7 +143,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		attrs = self.attrs
 
 		scope.resultValue = ''
-		if attrs['ngDisabled'] then scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled'])
+		scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled']) if attrs['ngDisabled']
+
+		formName = if attrs.hasOwnProperty('formName') and attrs['formName'] isnt "" then attrs['formName'] else 'form'
+		form = scope.$parent[formName]
 
 		self.autocommit = {}
 		self.autocommit.lostFocus = true if attrs['autocommit'].indexOf('lostFocus') isnt -1
@@ -156,19 +159,19 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		scope.setToday = () ->
 			# todo dhilt : i don't know why angular don't set $dirty after Today-click automatically...
-			scope.$parent.form.$dirty = true if scope.$parent.hasOwnProperty('form')
+			form.$dirty = true if form
 			self.parentScopeFormElement.$dirty = true if self.parentScopeFormElement
 			scope.resultValue = new Date()
 
 		self.inputElement = element.find("input")
 		self.inputElement.inputmask(inputDateStatic.mask)
 
-		self.wrapperElement = self.element.find("[data-dropdown-wrapper]")
-		self.togglerElement = self.element.find("[data-dropdown-toggler]")
+		self.wrapperElement = element.find("[data-dropdown-wrapper]")
+		self.togglerElement = element.find("[data-dropdown-toggler]")
 
-		if scope.$parent.hasOwnProperty('form') and scope.$parent.form.hasOwnProperty(attrs['name'])
+		if form and form.hasOwnProperty(attrs['name'])
 			self.hasDateInitialized = false
-			self.parentScopeFormElement = scope.$parent.form[attrs['name']]
+			self.parentScopeFormElement = form[attrs['name']]
 
 		self.focusAndCloseDatePickerDialog = () ->
 			return if !self.wrapperElement.hasClass('open')
