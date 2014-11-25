@@ -1,3 +1,6 @@
+### v1.0.* release changelog
+
+* Repository major refactoring
 
 ### v0.1.1+ release changelog
 
@@ -14,6 +17,8 @@
 * major cookies upd. (prefix instead of path in routeParams cookie) (0.1.6)
 
 * new associationService (0.1.7)
+
+* inputDate and associationService improvements (0.1.8)
 
 
 ### v0.1.1 release changelog
