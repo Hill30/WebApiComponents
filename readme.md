@@ -1,6 +1,7 @@
 ### v1.0.* release changelog
 
 * Repository major refactoring
+* httpInterceptor refactoring
 
 ### v0.1.1+ release changelog
 
