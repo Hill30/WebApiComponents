@@ -24,16 +24,15 @@ hill30Module.factory('httpInterceptor', ["$q", "$rootScope", ($q, $rootScope) ->
 
 		# 403 permission error which leads to permission dialog
 		if response.status is 403
-			dialogOpenerElement = angular.element('#permissionDeniedDialogOpener')
-			return returnObject if not dialogOpenerElement or not dialogOpenerElement.click
-			dialogOpenerElement.click()
+			return returnObject unless $rootScope.httpErrorsBox or $rootScope.httpErrorsBox.permissionDeniedDialog or $rootScope.httpErrorsBox.permissionDeniedDialog.openDialog
+			$rootScope.httpErrorsBox.permissionDeniedDialog.openDialog
 
 		# others errors which leads to simple popup
 		else
 			alertFullMessage = 'Http response error (' + response.status + '). ' + (JSON.stringify(response.data) if response.data)
 			console.log alertFullMessage
 
-			return returnObject if not $rootScope.popup or not $rootScope.popup.show
+			return returnObject unless $rootScope.popup or $rootScope.popup.show
 
 			$rootScope.popup.show
 				type: 'danger'
