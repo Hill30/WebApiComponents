@@ -1,12 +1,12 @@
 ### v1.1.0
 
-* custom styles
+* common custom styles (webApiComponentsStyles.less)
 * popup is service now, directive removing
 
 ### v1.0.* release changelog
 
 * Repository major refactoring
-* permissionDeniedDialog and httpInterceptor refactoring
+* httpInterceptor refactoring
 
 ### v0.1.1+ release changelog
 
