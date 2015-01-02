@@ -1,7 +1,12 @@
+### v1.1.0
+
+* custom styles
+* popup is service now, directive removing
+
 ### v1.0.* release changelog
 
 * Repository major refactoring
-* httpInterceptor refactoring
+* permissionDeniedDialog and httpInterceptor refactoring
 
 ### v0.1.1+ release changelog
 
