@@ -1,4 +1,4 @@
-hill30Module.factory('httpInterceptor', ['$q', '$rootScope', 'popup' , ($q, $rootScope, popup) ->
+hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, $rootScope, $injector) ->
 
 	###response: (response) ->
 
@@ -31,11 +31,13 @@ hill30Module.factory('httpInterceptor', ['$q', '$rootScope', 'popup' , ($q, $roo
 		else
 			alertFullMessage = 'Http response error (' + response.status + '). ' + (JSON.stringify(response.data) if response.data)
 			console.log alertFullMessage
-			popup.show
-				type: 'danger'
-				text: 'Http error, see console log for details...'
-				ttl: -1
-				hideDuplicates: true
+			
+			if popup = $injector.get('popup')
+				popup.show
+					type: 'danger'
+					text: 'Http error, see console log for details...'
+					ttl: -1
+					hideDuplicates: true
 
 		return returnObject
 
