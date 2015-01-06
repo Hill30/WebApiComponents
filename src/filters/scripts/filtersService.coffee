@@ -1,7 +1,7 @@
 hill30Module
 	.service('filtersService',[
-		'$log', '$rootScope', '$location', '$routeParams'
-		(console, $rootScope, $location, $routeParams) ->
+		'$log', '$rootScope', '$location'
+		(console, $rootScope, $location) ->
 
 			filters = {}
 
