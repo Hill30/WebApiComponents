@@ -40,25 +40,30 @@ hill30Module.directive 'selectBox', ['$log', '$parse', '$compile', (console, $pa
 		names = self.nameListString
 
 		elements.wrapper = angular.element("<div class='select-box'></div>")
-		elements.dropdown = angular.element('<div class="dropdown"><div data-toggle="dropdown" class="dropdown-toggle"></div><div class="dropdown-menu"></div></div>')
+		elements.dropdown = angular.element('<div class="dropdown"></div>')
+		elements.toggler = angular.element('<div data-toggle="dropdown" class="dropdown-toggle"></div>')
+		elements.dropdownMenu = angular.element('<div class="dropdown-menu"></div>')
 		elements.box = angular.element("<div class='select-box-text'" + tabindexString + "><div class='select-box-tooltip-wrap' ng-show='" + names + "'><div class='select-box-tooltip'>{{ " + names + " }}</div></div> {{ " + names + " }}</div>")
 
-		elements.toggler = elements.dropdown.find('[data-toggle]')
-		element.wrap(elements.wrapper).before(elements.dropdown)
+		elements.dropdown.append(elements.toggler)
+		elements.dropdown.append(elements.dropdownMenu)
+		element.wrap(elements.wrapper)
+		element.parent().prepend(elements.dropdown)
 
 		$compile(elements.dropdown.contents())(scope)
 		elements.toggler.append(elements.box)
 		$compile(elements.box.contents())(scope)
 
-		elements.dropdownMenu = elements.dropdown.find('.dropdown-menu')
 		elements.dropdownMenu.append(element)
 		elements.parent = element.parent().parent().parent()
+
 
 	selectBoxStatic.getValueChain = (targetScope, target) ->
 		return null if not targetScope
 		chain = target.match(/^([\w]+)\.(.+)$/)
 		return targetScope[target] if not chain or chain.length isnt 3
 		return selectBoxStatic.getValueChain(targetScope[chain[1]], chain[2])
+		
 
 	selectBoxStatic.linking = (self) ->
 		elements = self.elements
