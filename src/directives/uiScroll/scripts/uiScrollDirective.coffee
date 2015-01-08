@@ -11,6 +11,7 @@ globals: angular, window
 		element.scrollTop(value)
 
 ###
+
 hill30Module
 
 	.directive( 'uiScrollViewport'
@@ -18,7 +19,9 @@ hill30Module
 			 ->
 					controller:
 						[ '$scope', '$element'
-							(scope, element) -> element
+							(scope, element) ->
+								this.viewport = element
+								this
 						]
 
 		])
@@ -36,7 +39,7 @@ hill30Module
 
 						log = console.debug || console.log
 
-						match = $attr.uiScroll.match /^\s*(\w+)\s+in\s+(\w+)\s*$/
+						match = $attr.uiScroll.match(/^\s*(\w+)\s+in\s+([\w\.]+)\s*$/)
 						if !match
 							throw new Error "Expected uiScroll in form of '_item_ in _datasource_' but got '#{$attr.uiScroll}'"
 
@@ -46,7 +49,14 @@ hill30Module
 						isDatasource = (datasource) ->
 							angular.isObject(datasource) and datasource.get and angular.isFunction(datasource.get)
 
-						datasource = $scope[datasourceName]
+						getValueChain = (targetScope, target) ->
+							return null if not targetScope
+							chain = target.match(/^([\w]+)\.(.+)$/)
+							return targetScope[target] if not chain or chain.length isnt 3
+							return getValueChain(targetScope[chain[1]], chain[2])
+
+						datasource = getValueChain($scope, datasourceName)
+
 						if !isDatasource datasource
 							datasource = $injector.get(datasourceName)
 							throw new Error "#{datasourceName} is not a valid datasource" unless isDatasource datasource
@@ -70,7 +80,7 @@ hill30Module
 									throw new Error "ui-scroll directive does not support <#{template[0].localName}> as a repeating tag: #{template[0].outerHTML}"
 								repeaterType = 'div' if repeaterType not in ['li', 'tr']
 
-								viewport = controllers[0] || angular.element(window)
+								viewport = if controllers[0] and controllers[0].viewport then controllers[0].viewport else angular.element(window)
 								viewport.css({'overflow-y': 'auto', 'display': 'block'})
 
 								padding = (repeaterType)->
