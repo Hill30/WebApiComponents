@@ -15,7 +15,7 @@ hill30Module.service 'uiMaskInterceptor', () ->
 		data.maskPlaceholder = maskPlaceholder
 
 	parseDigitalSection = (secPos, mask, absMax) ->
-		return mask if data.newSections.length > secPos
+		return mask if data.newSections.length >= secPos
 		val = data.newSections[secPos].replace(/[^\d]/g, "")
 		return val if val is data.oldSections[secPos]
 		max = parseInt(absMax.toString().substr(0, 1), 10)

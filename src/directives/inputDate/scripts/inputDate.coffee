@@ -35,7 +35,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 					type="text"
 					class="form-control"
 					ng-model="inputValue"
-					ui-date-time-mask="99/99/9999"
+					ui-mask="99/99/9999"
 					placeholder="' + inputDateStatic.format + '"
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
@@ -275,8 +275,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		if attrs['updateFromCtrl']
 			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
-				inputElement[0].value = if options then options.value else ''
-				scope.resultValue = if options then options.value else ''
+				value = if options then options.value else ''
+				inputElement[0].value = value
+				scope.inputValue = value
+				scope.resultValue = value
 
 		if attrs['ngDisabled']
 			scope.$parent.$watch attrs['ngDisabled'], (value) ->
