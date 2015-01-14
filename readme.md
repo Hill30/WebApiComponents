@@ -1,3 +1,8 @@
+### v1.1.0
+
+* common custom styles (webApiComponentsStyles.less)
+* popup is service now, directive removing
+
 ### v1.0.* release changelog
 
 * Repository major refactoring

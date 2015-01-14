@@ -164,10 +164,12 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			scope.resultValue = new Date()
 
 		self.inputElement = element.find("input")
-		self.inputElement.inputmask(inputDateStatic.mask)
 
-		self.wrapperElement = element.find("[data-dropdown-wrapper]")
-		self.togglerElement = element.find("[data-dropdown-toggler]")
+		# todo dhilt : what about inputmask without jquery ??
+		#self.inputElement.inputmask(inputDateStatic.mask)
+
+		self.wrapperElement = angular.element(element[0].querySelector('[data-dropdown-wrapper]'))
+		self.togglerElement = angular.element(element[0].querySelector('[data-dropdown-toggler]'))
 
 		if form and form.hasOwnProperty(attrs['name'])
 			self.hasDateInitialized = false
@@ -175,8 +177,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		self.focusAndCloseDatePickerDialog = () ->
 			return if !self.wrapperElement.hasClass('open')
-			self.inputElement.focus()
-			self.togglerElement.click()
+			self.inputElement[0].focus()
+			self.togglerElement[0].click()
 
 
 	inputDateStatic.getDebouncedInputDelay = (param) ->
