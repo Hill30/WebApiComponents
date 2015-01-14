@@ -17,7 +17,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs.hasOwnProperty('name') and attrs['name'] isnt ""
 			nameAttr = 'name = "' + attrs['name'] + '"'
 
-		if parseInt(attrs['tabindex']) isnt NaN
+		if not isNaN parseInt(attrs['tabindex'], 10)
 			tabindexAttr = 'tabindex = "' + parseInt(attrs['tabindex']) + '"'
 			element.removeAttr('tabindex')
 
@@ -34,7 +34,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 				<input
 					type="text"
 					class="form-control"
-					ng-model="resultValue"
+					ng-model="inputValue"
+					ui-date-time-mask="99/99/9999"
+					placeholder="' + inputDateStatic.format + '"
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
 					' + (requiredAttr || '') + '
@@ -55,7 +57,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 						<div class="datepicker-wrap" ng-click="$event.stopPropagation()">
 
 							<datepicker
-							ng-model="resultValue"
+							ng-model="pickerValue"
 							datepicker-popup="' + inputDateStatic.format + '"
 							show-weeks="' + inputDateStatic.showWeeks + '">
 							</datepicker>
@@ -142,6 +144,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element = self.element
 		attrs = self.attrs
 
+		scope.inputValue = '';
+		scope.pickerValue = '';
 		scope.resultValue = ''
 		scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled']) if attrs['ngDisabled']
 
@@ -162,6 +166,11 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			form.$dirty = true if form
 			self.parentScopeFormElement.$dirty = true if self.parentScopeFormElement
 			scope.resultValue = new Date()
+			inputDateStatic.prepareValue(self, scope.resultValue);
+			self.focusAndCloseDatePickerDialog();
+			return inputDateStatic.commitInputValue(self, {
+				doNotDigest: true
+			});
 
 		self.inputElement = element.find("input")
 
@@ -195,6 +204,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 	inputDateStatic.prepareValue = (self, value) ->
 		filteredValue = $filter('date')(value, inputDateStatic.format)
+		self.scope.inputValue = filteredValue;
 		self.scope.resultValue = filteredValue
 		self.inputElement[0].value = filteredValue
 		inputDateStatic.validateValue(self, filteredValue)
@@ -254,7 +264,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if self.autocommit.input then inputElement.bind 'propertychange keyup paste', commitBy.event(self)
 		else if self.autocommit.debouncedInput then inputElement.bind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
-		scope.$watch 'resultValue', (value) ->
+		scope.$watch 'pickedValue', (value) ->
 			#watch is only for pick date
 			if typeof value isnt 'string'
 				inputDateStatic.prepareValue(self, value)
@@ -275,9 +285,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		handleKey = (event) ->
 			return true if event.target.innerHTML is ''
 			if event.which is 37
-				self.element.find('[ng-click="move(-1)"]').click()
+				angular.element(self.element[0].querySelector('[ng-click="move(-1)"]'))[0].click()
 			if event.which is 39
-				self.element.find('[ng-click="move(1)"]').click()
+				angular.element(self.element[0].querySelector('[ng-click="move(1)"]'))[0].click()
 			if event.which is 27
 				self.focusAndCloseDatePickerDialog()
 			else if event.which is 9
