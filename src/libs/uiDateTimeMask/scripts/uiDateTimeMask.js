@@ -204,7 +204,7 @@ hill30Module
 
 						// uiMaskInterceptor is needed (c) dhilt
 						if (interception && interception.unmaskValue) {
-							var result = interception.unmaskValue(value, oldValue, oldCaretPosition, maskPlaceholder);
+							var result = interception.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
 								return result;
 							}

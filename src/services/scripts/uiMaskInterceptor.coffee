@@ -1,18 +1,21 @@
 hill30Module.service 'uiMaskInterceptor', () ->
 
 	data =
+		event: null
 		newSections: null
 		oldSections: null
 		oldCaretPosition: null
 		maskPlaceholder: null
 
-	init = (value, oldValue, oldCaretPosition, maskPlaceholder) ->
+	init = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
+		data.event = event
 		data.newSections = value.split("/")
 		data.oldSections = oldValue.split("/")
 		data.oldCaretPosition = oldCaretPosition
 		data.maskPlaceholder = maskPlaceholder
 
 	parseDigitalSection = (secPos, mask, absMax) ->
+		return mask if data.newSections.length > secPos
 		val = data.newSections[secPos].replace(/[^\d]/g, "")
 		return val if val is data.oldSections[secPos]
 		max = parseInt(absMax.toString().substr(0, 1), 10)
@@ -28,9 +31,9 @@ hill30Module.service 'uiMaskInterceptor', () ->
 		return val + mask[0]  if val <= max
 		return val
 
-	unmaskValue = (value, oldValue, oldCaretPosition, maskPlaceholder) ->
+	unmaskValue = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		return false if maskPlaceholder isnt "MM/dd/yyyy" or not oldValue
-		init value, oldValue, oldCaretPosition, maskPlaceholder
+		init event, value, oldValue, oldCaretPosition, maskPlaceholder
 		return "" + parseDigitalSection(0, "MM", 12) + parseDigitalSection(1, "dd", 31) + parseDigitalSection(2, "yyyy", 2900)
 
 
