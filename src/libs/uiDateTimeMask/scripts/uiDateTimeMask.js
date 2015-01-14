@@ -1,7 +1,7 @@
 /*
 
  Attention!!
- - uiMaskInterceptor is needed as dependency to make uiDateTimeMask from uiMask
+ - uiMaskInterceptor is needed as dependency to add date/time masking functionality to uiMask
  - 5 lines of code was injected into unmaskValue function, be careful during updates
 (c) dhilt, 2015
 
@@ -19,7 +19,7 @@ hill30Module
 		},
 		'clearOnBlur': true
 	})
-	.directive('uiDateTimeMask', ['uiMaskConfig', 'uiMaskInterception', '$parse', function (maskConfig, interception, $parse) {
+	.directive('uiMask', ['uiMaskConfig', 'uiMaskInterceptor', '$parse', function (maskConfig, interception, $parse) {
 		'use strict';
 
 		return {
