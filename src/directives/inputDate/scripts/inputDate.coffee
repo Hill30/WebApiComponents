@@ -36,7 +36,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 					class="form-control"
 					ng-model="inputValue"
 					ui-mask="99/99/9999"
-					placeholder="' + inputDateStatic.format + '"
+					placeholder="' + inputDateStatic.mask + '"
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
 					' + (requiredAttr || '') + '
@@ -144,8 +144,8 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element = self.element
 		attrs = self.attrs
 
-		scope.inputValue = '';
-		scope.pickerValue = '';
+		scope.inputValue = inputDateStatic.mask
+		scope.pickerValue = ''
 		scope.resultValue = ''
 		scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled']) if attrs['ngDisabled']
 
@@ -258,31 +258,37 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 
 		inputElement = self.inputElement
 		commitBy = inputDateStatic.commitInputValueBy
+		unregisterList = []
 
 		if self.autocommit.lostFocus then inputElement.bind 'blur', commitBy.event(self)
 		if self.autocommit.enter then inputElement.bind 'keyup', commitBy.enter(self)
 		if self.autocommit.input then inputElement.bind 'propertychange keyup paste', commitBy.event(self)
 		else if self.autocommit.debouncedInput then inputElement.bind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
-		scope.$watch 'pickedValue', (value) ->
-			#watch is only for pick date
-			if typeof value isnt 'string'
-				inputDateStatic.prepareValue(self, value)
-				self.focusAndCloseDatePickerDialog()
-				inputDateStatic.commitInputValue(self, {
-					doNotDigest: true
-				})
+		unregisterList.push(
+			scope.$watch 'pickedValue', (value) ->
+				#watch is only for pick date
+				if typeof value isnt 'string'
+					inputDateStatic.prepareValue(self, value)
+					self.focusAndCloseDatePickerDialog()
+					inputDateStatic.commitInputValue(self, {
+						doNotDigest: true
+					})
+		)
 
 		if attrs['updateFromCtrl']
-			scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
-				value = if options then options.value else ''
-				inputElement[0].value = value
-				scope.inputValue = value
-				scope.resultValue = value
+			unregisterList.push(
+				scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
+					scope.inputValue = options ? options.value : inputDateStatic.mask
+					inputElement[0].value = scope.inputValue
+					scope.resultValue = options ? options.value : ''
+			)
 
 		if attrs['ngDisabled']
-			scope.$parent.$watch attrs['ngDisabled'], (value) ->
-				scope.disabled = value
+			unregisterList.push(
+				scope.$parent.$watch attrs['ngDisabled'], (value) ->
+					scope.disabled = value
+			)
 
 		handleKey = (event) ->
 			return true if event.target.innerHTML is ''
@@ -299,11 +305,12 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element.bind 'keyup', handleKey
 
 		scope.$on "$destroy", () ->
-			element.unbind 'keyup', handleKey
 			if self.autocommit.lostFocus then inputElement.unbind 'blur', commitBy.event(self)
 			if self.autocommit.enter then inputElement.unbind 'keyup', commitBy.enter(self)
 			if self.autocommit.input then inputElement.unbind 'propertychange keyup paste', commitBy.event(self)
 			else if self.autocommit.debouncedInput then inputElement.unbind 'propertychange keyup paste', commitBy.eventDebounced(self)
+			element.unbind 'keyup', handleKey
+			unregFunc() for unregFunc in unregisterList
 
 
 	return {
