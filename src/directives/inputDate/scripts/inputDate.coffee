@@ -144,7 +144,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		element = self.element
 		attrs = self.attrs
 
-		scope.inputValue = inputDateStatic.mask
+		scope.inputValue = ''
 		scope.pickerValue = ''
 		scope.resultValue = ''
 		scope.disabled = inputDateStatic.getValueChain(scope.$parent, attrs['ngDisabled']) if attrs['ngDisabled']
