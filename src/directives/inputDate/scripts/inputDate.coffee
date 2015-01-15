@@ -266,7 +266,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		else if self.autocommit.debouncedInput then inputElement.bind 'propertychange keyup paste', commitBy.eventDebounced(self)
 
 		unregisterList.push(
-			scope.$watch 'pickedValue', (value) ->
+			scope.$watch 'pickerValue', (value) ->
 				#watch is only for pick date
 				if typeof value isnt 'string'
 					inputDateStatic.prepareValue(self, value)
@@ -279,9 +279,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs['updateFromCtrl']
 			unregisterList.push(
 				scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
-					scope.inputValue = options ? options.value : inputDateStatic.mask
+					scope.inputValue = if options then options.value else inputDateStatic.mask
 					inputElement[0].value = scope.inputValue
-					scope.resultValue = options ? options.value : ''
+					scope.resultValue = if options then options.value else ''
 			)
 
 		if attrs['ngDisabled']
