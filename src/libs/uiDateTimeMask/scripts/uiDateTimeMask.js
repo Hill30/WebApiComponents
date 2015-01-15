@@ -206,7 +206,7 @@ hill30Module
 						if (interception && interception.unmaskValue) {
 							var result = interception.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
-								return result;
+								value = result;
 							}
 						}
 

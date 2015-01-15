@@ -279,9 +279,9 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs['updateFromCtrl']
 			unregisterList.push(
 				scope.$parent.$watch attrs['updateFromCtrl'], (options) ->
-					scope.inputValue = if options then options.value else inputDateStatic.mask
+					scope.inputValue = if options then options.value else ''
 					inputElement[0].value = scope.inputValue
-					scope.resultValue = if options then options.value else ''
+					scope.resultValue = scope.inputValue
 			)
 
 		if attrs['ngDisabled']
