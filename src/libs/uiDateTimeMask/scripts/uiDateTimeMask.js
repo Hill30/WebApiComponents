@@ -2,7 +2,7 @@
 
  Attention!!
  - uiMaskInterceptor is needed as dependency to add date/time masking functionality to uiMask
- - 5 lines of code was injected into unmaskValue function, be careful during updates
+ - 10 lines of code was injected into unmaskValue function, be careful during updates
 (c) dhilt, 2015
 
 */
@@ -204,6 +204,9 @@ hill30Module
 
 						// uiMaskInterceptor is needed (c) dhilt
 						if (interception && interception.unmaskValue) {
+							if (!e && value !== "" && value.indexOf('/') === -1) {
+								value = maskValue(value);
+							}
 							var result = interception.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
 								value = result;
