@@ -48,13 +48,13 @@ hill30Module.service 'uiMaskInterceptor', () ->
 			if data.newSections.length > secPos and (data.oldCaretPosition is secPos + digits * (secPos + 1))
 				data.newSections[secPos + 1] = val[digits] + data.newSections[secPos + 1]
 			val = val.substr(0, digits)
-		zero = data.newSections[secPos][0] is "0"
+		zero = data.newSections[secPos][0] is "0" and val.length and val.length > 1
 		val = parseInt(val, 10)
 		if isNaN(val) or val < 0 or val > absMax
 			data.newSections[secPos + 2] = "" if secPos < 1
 			data.newSections[secPos + 1] = "" if secPos < 2
 			return mask
-		return "0" + val if (zero and val > 0) or (val > max and val < 10)
+		return "0" + val if (zero and val >= 0) or (val > max and val < 10)
 		return val + mask[0]  if val <= max
 		return val
 
