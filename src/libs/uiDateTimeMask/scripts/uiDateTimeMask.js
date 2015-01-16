@@ -1,6 +1,7 @@
 /*
 
  Attention!!
+ - a new angular module is defined: ui.dateTimeMask
  - uiMaskInterceptor is needed as dependency to add date/time masking functionality to uiMask
  - 10 lines of code was injected into unmaskValue function, be careful during updates
 (c) dhilt, 2015
@@ -10,7 +11,8 @@
 /*
  Attaches input mask onto input element
  */
-hill30Module
+angular.module('ui.dateTimeMask', [])
+
 	.value('uiMaskConfig', {
 		'maskDefinitions': {
 			'9': /\d/,
