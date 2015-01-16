@@ -33,9 +33,11 @@ hill30Module.service 'uiMaskInterceptor', () ->
 			val = data.newSections[secPos][0]
 		if secPos > 0 and data.newSections[secPos - 1] and (length = data.newSections[secPos - 1].length)
 			preVal = data.newSections[secPos - 1][length - 1];
-		return "am" if val is "a" or preVal is "a"
-		return "pm" if val is "p" or preVal is "p"
-		return "xm"
+		return "am" if preVal is "a"
+		return "pm" if preVal is "p"
+		return "am" if val is "a"
+		return "pm" if val is "p"
+		return "xx"
 
 	parseDigitalSection = (secPos, mask, absMax) ->
 		return mask if data.newSections.length - 1 < secPos
@@ -58,7 +60,7 @@ hill30Module.service 'uiMaskInterceptor', () ->
 
 	unmaskValue = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		type = "date" if maskPlaceholder is "mm/dd/yyyy"
-		type = "time" if maskPlaceholder is "hh:mm xm"
+		type = "time" if maskPlaceholder is "hh:mm xx"
 		return false if not type or not oldValue or value is maskPlaceholder
 		initialize type, event, value, oldValue, oldCaretPosition, maskPlaceholder
 		if type is "date"
