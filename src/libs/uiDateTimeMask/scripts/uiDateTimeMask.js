@@ -19,7 +19,7 @@ hill30Module
 		},
 		'clearOnBlur': true
 	})
-	.directive('uiMask', ['uiMaskConfig', 'uiMaskInterceptor', '$parse', function (maskConfig, interception, $parse) {
+	.directive('uiMask', ['uiMaskConfig', 'uiMaskInterceptor', '$parse', function (maskConfig, interceptor, $parse) {
 		'use strict';
 
 		return {
@@ -203,11 +203,11 @@ hill30Module
 					function unmaskValue(value, e){
 
 						// uiMaskInterceptor is needed (c) dhilt
-						if (interception && interception.unmaskValue) {
+						if (interceptor && interceptor.unmaskValue) {
 							if (!e && value !== "" && value.indexOf('/') === -1) {
 								value = maskValue(value);
 							}
-							var result = interception.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
+							var result = interceptor.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
 								value = result;
 							}
