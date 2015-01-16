@@ -49,7 +49,7 @@ hill30Module.service 'uiMaskInterceptor', () ->
 		type = "date" if maskPlaceholder is "mm/dd/yyyy"
 		type = "time" if maskPlaceholder is "hh:mm xm"
 		return false if not type or not oldValue or value is maskPlaceholder
-		initialize event, value, oldValue, oldCaretPosition, maskPlaceholder
+		initialize type, event, value, oldValue, oldCaretPosition, maskPlaceholder
 		if type is "date"
 			return "" + parseDigitalSection(0, "mm", 12) + "/" + parseDigitalSection(1, "dd", 31) + "/" + parseDigitalSection(2, "yyyy", 2999)
 		if type is "time"
