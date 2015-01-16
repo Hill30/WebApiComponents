@@ -204,12 +204,12 @@ hill30Module
 
 						// uiMaskInterceptor is needed (c) dhilt
 						if (interceptor && interceptor.unmaskValue) {
-							if (!e && value !== "" && value.indexOf('/') === -1) {
+							if (!e && value !== "" && value.indexOf('/') === -1 && value.indexOf(':') === -1) {
 								value = maskValue(value);
 							}
 							var result = interceptor.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
-								value = result;
+								value = result.value;
 							}
 						}
 
