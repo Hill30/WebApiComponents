@@ -1,16 +1,28 @@
 hill30Module.service 'uiMaskInterceptor', () ->
 
 	data =
+		type: null
 		event: null
 		newSections: null
 		oldSections: null
 		oldCaretPosition: null
 		maskPlaceholder: null
 
-	init = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
+	sectionsInit =
+		date: (value) ->
+			value.split("/")
+		time: (value) ->
+			sections = value.split(":")
+			if sections.length is 2
+				tmp = sections[1].split(" ")
+				sections[1] = tmp[0]
+				sections[2] = tmp[1]
+			sections
+
+	initialize = (type, event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		data.event = event
-		data.newSections = value.split("/")
-		data.oldSections = oldValue.split("/")
+		data.newSections = sectionsInit[type](value)
+		data.oldSections = sectionsInit[type](oldValue)
 		data.oldCaretPosition = oldCaretPosition
 		data.maskPlaceholder = maskPlaceholder
 
@@ -34,10 +46,14 @@ hill30Module.service 'uiMaskInterceptor', () ->
 		return val
 
 	unmaskValue = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
-		return false if maskPlaceholder isnt "mm/dd/yyyy" or not oldValue or value is maskPlaceholder
-		init event, value, oldValue, oldCaretPosition, maskPlaceholder
-		return "" + parseDigitalSection(0, "mm", 12) + "/" + parseDigitalSection(1, "dd", 31) + "/" + parseDigitalSection(2, "yyyy", 2999)
-
+		type = "date" if maskPlaceholder is "mm/dd/yyyy"
+		type = "time" if maskPlaceholder is "hh:mm xm"
+		return false if not type or not oldValue or value is maskPlaceholder
+		initialize event, value, oldValue, oldCaretPosition, maskPlaceholder
+		if type is "date"
+			return "" + parseDigitalSection(0, "mm", 12) + "/" + parseDigitalSection(1, "dd", 31) + "/" + parseDigitalSection(2, "yyyy", 2999)
+		if type is "time"
+			return "" + parseDigitalSection(0, "hh", 12) + "/" + parseDigitalSection(1, "mm", 59) + "/" + "am"; #+ parseLiteralSection(2, "xm", 2999);
 
 	return {
 		unmaskValue: unmaskValue
