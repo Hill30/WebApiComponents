@@ -4,7 +4,6 @@ hill30Module.service 'uiMaskInterceptor', () ->
 
 	data =
 		type: null
-		event: null
 		newSections: null
 		oldSections: null
 		oldCaretPosition: null
@@ -21,8 +20,7 @@ hill30Module.service 'uiMaskInterceptor', () ->
 				sections[2] = tmp[1]
 			sections
 
-	initialize = (type, event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
-		data.event = event
+	initialize = (type, value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		data.newSections = sectionsInit[type](value)
 		data.oldSections = sectionsInit[type](oldValue)
 		data.oldCaretPosition = oldCaretPosition
@@ -58,11 +56,11 @@ hill30Module.service 'uiMaskInterceptor', () ->
 		return val + mask[0]  if val <= max
 		return val
 
-	unmaskValue = (event, value, oldValue, oldCaretPosition, maskPlaceholder) ->
+	unmaskValue = (value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		type = "date" if maskPlaceholder is "mm/dd/yyyy"
 		type = "time" if maskPlaceholder is "hh:mm xx"
 		return false if not type or not oldValue or value is maskPlaceholder
-		initialize type, event, value, oldValue, oldCaretPosition, maskPlaceholder
+		initialize type, value, oldValue, oldCaretPosition, maskPlaceholder
 		if type is "date"
 			result.value = "" + parseDigitalSection(0, "mm", 12) + "/" + parseDigitalSection(1, "dd", 31) + "/" + parseDigitalSection(2, "yyyy", 2999)
 		if type is "time"

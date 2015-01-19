@@ -209,7 +209,7 @@ angular.module('ui.dateTimeMask', [])
 							if (!e && value !== "" && value.indexOf('/') === -1 && value.indexOf(':') === -1) {
 								value = maskValue(value);
 							}
-							var result = interceptor.unmaskValue(event, value, oldValue, oldCaretPosition, maskPlaceholder);
+							var result = interceptor.unmaskValue(value, oldValue, oldCaretPosition, maskPlaceholder);
 							if (result !== false) {
 								value = result.value;
 							}
