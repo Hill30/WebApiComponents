@@ -47,18 +47,18 @@ hill30Module.service 'uiMaskInterceptor', () ->
 				data.newSections[secPos + 1] = val[digits] + data.newSections[secPos + 1]
 			val = val.substr(0, digits)
 
-	    result = ''
-	    for(n = 0..mask.length) 
-	      v = parseInt val[n], 10
-	      if n is 0
-	        r = v
-	        max = parseInt(absMax.toString().substr(n, 1), 10)
-	      else
-	        r = parseInt(result + val[n], 10)
-	        max = absMax
-	      continue if isNaN(r) or r > max
-	      result += val[n]
-	    return result
+		result = ''
+		for n in [0..mask.length]
+			v = parseInt val[n], 10
+			if n is 0
+				r = v
+				max = parseInt(absMax.toString().substr(n, 1), 10)
+			else
+				r = parseInt(result + val[n], 10)
+				max = absMax
+			continue if isNaN(r) or r > max
+			result += val[n]
+		return result
 
 	unmaskValue = (value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		type = "date" if maskPlaceholder is "mm/dd/yyyy"
