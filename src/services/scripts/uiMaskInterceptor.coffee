@@ -40,21 +40,25 @@ hill30Module.service 'uiMaskInterceptor', () ->
 	parseDigitalSection = (secPos, mask, absMax) ->
 		return mask if data.newSections.length - 1 < secPos
 		val = data.newSections[secPos].replace(/[^\d]/g, "")
-		max = parseInt(absMax.toString().substr(0, 1), 10)
+
 		digits = mask.length
 		if val.length is digits + 1
 			if data.newSections.length > secPos and (data.oldCaretPosition is secPos + digits * (secPos + 1))
 				data.newSections[secPos + 1] = val[digits] + data.newSections[secPos + 1]
 			val = val.substr(0, digits)
-		zero = data.newSections[secPos][0] is "0" and val.length and val.length > 1
-		val = parseInt(val, 10)
-		if isNaN(val) or val < 0 or val > absMax
-			data.newSections[secPos + 2] = "" if secPos < 1
-			data.newSections[secPos + 1] = "" if secPos < 2
-			return mask
-		return "0" + val if (zero and val >= 0) or (val > max and val < 10)
-		return val + mask[0]  if val <= max
-		return val
+
+	    result = ''
+	    for(n = 0..mask.length) 
+	      v = parseInt val[n], 10
+	      if n is 0
+	        r = v
+	        max = parseInt(absMax.toString().substr(n, 1), 10)
+	      else
+	        r = parseInt(result + val[n], 10)
+	        max = absMax
+	      continue if isNaN(r) or r > max
+	      result += val[n]
+	    return result
 
 	unmaskValue = (value, oldValue, oldCaretPosition, maskPlaceholder) ->
 		type = "date" if maskPlaceholder is "mm/dd/yyyy"
