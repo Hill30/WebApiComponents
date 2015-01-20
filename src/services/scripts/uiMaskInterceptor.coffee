@@ -54,7 +54,7 @@ hill30Module.service 'uiMaskInterceptor', () ->
 			else
 				r = parseInt(result + val[n], 10)
 				max = absMax
-			continue if isNaN(r) or r > max
+			continue if isNaN(v) or isNaN(r) or r > max
 			result += val[n]
 		return result
 
