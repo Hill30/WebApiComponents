@@ -27,6 +27,10 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 		if attrs.hasOwnProperty('ngDisabled')
 			disabledAttr = 'ng-disabled="disabled"'
 
+		maskAttr = 'inputmask-date';
+		if not attrs.hasOwnProperty('maskType') or attrs['maskType'] isnt 'jquery.inputmask'
+			maskAttr = 'ui-mask="99/99/9999" placeholder="' + inputDateStatic.mask + '"';
+
 		attrs['autocommit'] ?= ''
 
 		html = '
@@ -35,8 +39,7 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 					type="text"
 					class="form-control"
 					ng-model="inputValue"
-					ui-mask="99/99/9999"
-					placeholder="' + inputDateStatic.mask + '"
+					' + (maskAttr || '') + '
 					' + (nameAttr || '') + '
 					' + (tabindexAttr || '') + '
 					' + (requiredAttr || '') + '
