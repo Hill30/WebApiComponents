@@ -1,3 +1,8 @@
+### v1.1.1
+
+* uiMask (as ui.dateTimeMask module), uiMaskInterceptor (as service)
+* remove jQuery from selectBox and inputDate directives
+
 ### v1.1.0
 
 * common custom styles (webApiComponentsStyles.less)
