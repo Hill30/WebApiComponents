@@ -1,16 +1,17 @@
 {
-    "author": "Hill30",
-    "name": "Hill30 components",
-    "description": "Hill30 AngularJS extras",
-    "version": "0.1.0",
-    "main": "",
-    "dependencies": {
-        "jquery": "1.10.2",
-        "angular": "1.2.16",
-        "angular-resource": "1.2.16",
-        "bootstrap-datepicker": "1.0.0"
-    },
-    "ignore": [
-        "readme.md"
-    ]
+	"author": "Hill30",
+	"name": "Hill30 components",
+	"description": "Hill30 AngularJS extras",
+	"version": "0.1.0",
+	"main": "",
+	"dependencies": {
+		"jquery": "1.10.2",
+		"angular": "1.2.16",
+		"angular-resource": "1.2.16",
+		"bootstrap-datepicker": "1.0.0",
+		"ui-scroll": "1.0.2"
+	},
+	"ignore": [
+		"readme.md"
+	]
 }

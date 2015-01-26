@@ -176,10 +176,6 @@ hill30Module.directive 'inputDate', ['$timeout', '$filter', ($timeout, $filter) 
 			});
 
 		self.inputElement = element.find("input")
-
-		# todo dhilt : what about inputmask without jquery ??
-		#self.inputElement.inputmask(inputDateStatic.mask)
-
 		self.wrapperElement = angular.element(element[0].querySelector('[data-dropdown-wrapper]'))
 		self.togglerElement = angular.element(element[0].querySelector('[data-dropdown-toggler]'))
 
