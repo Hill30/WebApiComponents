@@ -1,7 +1,9 @@
-### v1.1.1
+### v1.1.1+
 
-* uiMask (as ui.dateTimeMask module), uiMaskInterceptor (as service)
 * remove jQuery from selectBox and inputDate directives
+* uiMask (as ui.dateTimeMask module), uiMaskInterceptor (as service)
+* inputDate has mask-type attr (to use jquery.inputmask or ui.dateTimeMask)
+* remove ui.scroll from repo
 
 ### v1.1.0
 
