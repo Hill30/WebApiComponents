@@ -3,7 +3,6 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	confirmStatic = {}
 	confirmStatic.isInitialized = false
 	confirmStatic.isDialogOpened = false
-	confirmStatic.levels = ['default', 'danger']
 	confirmStatic.defaultLevel = 'default'
 	confirmStatic.defaultWindowClass = ''
 
@@ -40,8 +39,8 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 		self = confirmStatic
 		scope = self.scope
 		scope.windowClass = data.windowClass or self.defaultWindowClass
-		scope.doLevel = if self.levels.indexOf(data.doLevel) isnt -1 then data.doLevel else self.defaultLevel
-		scope.cancelLevel = if self.levels.indexOf(data.cancelLevel) isnt -1 then data.cancelLevel else self.defaultLevel
+		scope.doLevel = data.doLevel or self.defaultLevel
+		scope.cancelLevel = data.cancelLevel or self.defaultLevel
 		scope.uiData = {}
 		scope.uiData.title = data.title or self.uiDataDefault.title
 		scope.uiData.text = data.text or self.uiDataDefault.text
