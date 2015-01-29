@@ -5,6 +5,7 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	confirmStatic.isDialogOpened = false
 	confirmStatic.levels = ['default', 'danger']
 	confirmStatic.defaultLevel = 'default'
+	confirmStatic.defaultWindowClass = ''
 
 	confirmStatic.uiDataDefault =
 		title: "Confirmation"
@@ -27,9 +28,9 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 			</div>
 
 			<div class="modal-footer text-center">
-				<button class="btn btn-default" ng-click="cancel()">{{uiData.cancel}}</button>
-				<button class="btn btn-{{level}}" ng-click="do()">
-					<span class="glyphicon glyphicon-remove-2" ng-show="level == \'danger\'"></span>
+				<button class="btn btn-{{cancelLevel}}" ng-click="cancel()">{{uiData.cancel}}</button>
+				<button class="btn btn-{{doLevel}}" ng-click="do()">
+					<span class="glyphicon glyphicon-remove-2" ng-show="doLevel == \'danger\'"></span>
 					{{uiData.do}}</button>
 			</div>
 		</div>'
@@ -38,10 +39,12 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	confirmStatic.configure = (data) ->
 		self = confirmStatic
 		scope = self.scope
+		scope.windowClass = data.windowClass or self.defaultWindowClass
+		scope.doLevel = if self.levels.indexOf(data.doLevel) isnt -1 then data.doLevel else self.defaultLevel
+		scope.cancelLevel = if self.levels.indexOf(data.cancelLevel) isnt -1 then data.cancelLevel else self.defaultLevel
 		scope.uiData = {}
 		scope.uiData.title = data.title or self.uiDataDefault.title
 		scope.uiData.text = data.text or self.uiDataDefault.text
-		scope.level = if self.levels.indexOf(data.level) isnt -1 then data.level else self.defaultLevel
 		scope.uiData['do'] = data.doCaption or self.uiDataDefault['do']
 		scope.uiData['cancel'] = data.cancelCaption or self.uiDataDefault['cancel']
 		scope['do'] = () -> 
@@ -112,7 +115,7 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 					confirmStatic.configure(confirmObj)
 					$modalInstance.opened.then confirmStatic.linking
 
-				windowClass: ''
+				windowClass: confirmStatic.windowClass
 
 				backdrop: 'static'
 
