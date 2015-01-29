@@ -3,14 +3,15 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	confirmStatic = {}
 	confirmStatic.isInitialized = false
 	confirmStatic.isDialogOpened = false
-	confirmStatic.defaultLevel = 'default'
-	confirmStatic.defaultWindowClass = ''
 
 	confirmStatic.uiDataDefault =
 		title: "Confirmation"
 		text: "Are you sure?"
-		do: "Ok"
-		cancel: "Cancel"
+		doCaption: "Ok"
+		cancelCaption: "Cancel"
+		windowClass: ''
+		doLevel: 'default'
+		cancelLevel: 'default'
 
 
 	confirmStatic.getTemplate = () ->
@@ -27,10 +28,10 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 			</div>
 
 			<div class="modal-footer text-center">
-				<button class="btn btn-{{cancelLevel}}" ng-click="cancel()">{{uiData.cancel}}</button>
-				<button class="btn btn-{{doLevel}}" ng-click="do()">
-					<span class="glyphicon glyphicon-remove-2" ng-show="doLevel == \'danger\'"></span>
-					{{uiData.do}}</button>
+				<button class="btn btn-{{uiData.cancelLevel}}" ng-click="uiData.cancel()">{{uiData.cancelCaption}}</button>
+				<button class="btn btn-{{uiData.doLevel}}" ng-click="uiData.do()">
+					<span class="glyphicon glyphicon-remove-2" ng-show="uiData.doLevel == \'danger\'"></span>
+					{{uiData.doCaption}}</button>
 			</div>
 		</div>'
 
@@ -38,20 +39,21 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	confirmStatic.configure = (data) ->
 		self = confirmStatic
 		scope = self.scope
-		scope.windowClass = data.windowClass or self.defaultWindowClass
-		scope.doLevel = data.doLevel or self.defaultLevel
-		scope.cancelLevel = data.cancelLevel or self.defaultLevel
 		scope.uiData = {}
+		scope.uiData.windowClass = data.windowClass or self.uiDataDefault.windowClass
+		scope.uiData.doLevel = data.doLevel or self.uiDataDefault.doLevel
+		scope.uiData.cancelLevel = data.cancelLevel or self.uiDataDefault.cancelLevel
 		scope.uiData.title = data.title or self.uiDataDefault.title
 		scope.uiData.text = data.text or self.uiDataDefault.text
-		scope.uiData['do'] = data.doCaption or self.uiDataDefault['do']
-		scope.uiData['cancel'] = data.cancelCaption or self.uiDataDefault['cancel']
-		scope['do'] = () -> 
+		scope.uiData.doCaption = data.doCaption or self.uiDataDefault.doCaption
+		scope.uiData.cancelCaption = data.cancelCaption or self.uiDataDefault.cancelCaption
+		scope.uiData['do'] = () ->
 			self.hideDialog()
 			data['do']() if data['do'] && typeof data['do']  is 'function' 
-		scope['cancel'] = () -> 
+		scope.uiData['cancel'] = () ->
 			self.hideDialog()
 			data['cancel']() if data['cancel'] && typeof data['cancel']  is 'function'
+		confirmStatic.scope.uiData = confirmStatic.uiData if confirmStatic.scope
 
 
 	confirmStatic.linking = () ->
@@ -99,8 +101,8 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 	return {
 		openDialog: (confirmObj) ->
 
+			confirmStatic.configure(confirmObj)
 			if confirmStatic.isInitialized
-				confirmStatic.configure(confirmObj)
 				confirmStatic.showDialog()
 				return
 
@@ -108,16 +110,13 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 
 			$modal.open
 				template: confirmStatic.getTemplate
-
+				windowClass: confirmStatic.uiData.windowClass
+				backdrop: 'static'
+				keyboard: false
 				controller: ($scope, $modalInstance) ->
 					confirmStatic.scope = $scope
-					confirmStatic.configure(confirmObj)
+					$scope.uiData = confirmStatic.uiData
 					$modalInstance.opened.then confirmStatic.linking
 
-				windowClass: confirmStatic.windowClass
-
-				backdrop: 'static'
-
-				keyboard: false
 	}
 ]
