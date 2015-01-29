@@ -70,6 +70,7 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 				self.hideDialog()
 				event.stopPropagation()
 				event.preventDefault()
+
 		handleEscDown = (event) ->
 			return if not confirmStatic.isDialogOpened or event.which isnt 27
 			self.hideDialog();
@@ -78,10 +79,12 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 
 		self.modalWindow.bind 'click', handleClick
 		$document.bind 'keydown', handleEscDown
+		routeChangeStartUnregister = self.scope.$on '$routeChangeStart', self.hideDialog
+
 		self.scope.$on '$destroy', () ->
 			self.modalWindow.unbind 'click', handleClick
 			$document.unbind 'keydown', handleEscDown
-		self.scope.$on '$routeChangeStart', self.hideDialog
+			routeChangeStartUnregister()
 		
 		confirmStatic.isDialogOpened = true
 
