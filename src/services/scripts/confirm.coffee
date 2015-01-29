@@ -38,19 +38,18 @@ hill30Module.factory 'confirm', ['$modal', '$document', ($modal, $document) ->
 
 	confirmStatic.configure = (data) ->
 		self = confirmStatic
-		scope = self.scope
-		scope.uiData = {}
-		scope.uiData.windowClass = data.windowClass or self.uiDataDefault.windowClass
-		scope.uiData.doLevel = data.doLevel or self.uiDataDefault.doLevel
-		scope.uiData.cancelLevel = data.cancelLevel or self.uiDataDefault.cancelLevel
-		scope.uiData.title = data.title or self.uiDataDefault.title
-		scope.uiData.text = data.text or self.uiDataDefault.text
-		scope.uiData.doCaption = data.doCaption or self.uiDataDefault.doCaption
-		scope.uiData.cancelCaption = data.cancelCaption or self.uiDataDefault.cancelCaption
-		scope.uiData['do'] = () ->
+		self.uiData = {}
+		self.uiData.windowClass = data.windowClass or self.uiDataDefault.windowClass
+		self.uiData.doLevel = data.doLevel or self.uiDataDefault.doLevel
+		self.uiData.cancelLevel = data.cancelLevel or self.uiDataDefault.cancelLevel
+		self.uiData.title = data.title or self.uiDataDefault.title
+		self.uiData.text = data.text or self.uiDataDefault.text
+		self.uiData.doCaption = data.doCaption or self.uiDataDefault.doCaption
+		self.uiData.cancelCaption = data.cancelCaption or self.uiDataDefault.cancelCaption
+		self.uiData['do'] = () ->
 			self.hideDialog()
 			data['do']() if data['do'] && typeof data['do']  is 'function' 
-		scope.uiData['cancel'] = () ->
+		self.uiData['cancel'] = () ->
 			self.hideDialog()
 			data['cancel']() if data['cancel'] && typeof data['cancel']  is 'function'
 		confirmStatic.scope.uiData = confirmStatic.uiData if confirmStatic.scope
