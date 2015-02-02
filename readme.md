@@ -1,21 +1,27 @@
-### v1.1.1+
+### Release changelog
+
+## v1.2.0
+* new modalDialogs factory
+* confirmation factory (based on modalDialogs) instead of old confirm
+
+## v1.1.1+
 
 * remove jQuery from selectBox and inputDate directives
 * uiMask (as ui.dateTimeMask module), uiMaskInterceptor (as service)
 * inputDate has mask-type attr (to use jquery.inputmask or ui.dateTimeMask)
 * remove ui.scroll from repo
 
-### v1.1.0
+## v1.1.0
 
 * common custom styles (webApiComponentsStyles.less)
 * popup is service now, directive removing
 
-### v1.0.* release changelog
+## v1.0.*
 
 * Repository major refactoring
 * httpInterceptor refactoring
 
-### v0.1.1+ release changelog
+## v0.1.1+
 
 * jquery_inputmask plugin upd. (0.1.2)
 
@@ -34,7 +40,7 @@
 * inputDate and associationService improvements (0.1.8)
 
 
-### v0.1.1 release changelog
+## v0.1.1
 
 * http interceptor factory
 
@@ -45,7 +51,7 @@
 * confirm factory
 
 
-### v0.1.0 release changelog
+## v0.1.0
 
 * new <a href="https://github.com/Hill30/WebApiComponents/tree/master/src/directives/selectBox">selectBox</a> directive (instead of select2)
 
