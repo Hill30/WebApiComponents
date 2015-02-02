@@ -3,6 +3,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 	dialogList = []
 
 	commonTemplateId = 'ModalDialogTemplateId'
+	bodyElement = null
 	modalBackdrop = null
 	modalBackdropParent = null
 	modalBackdropZIndex = null
@@ -62,7 +63,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 
 	showDialog = (self) ->
 		self.isDialogOpened = true
-		modalBackdrop.css('z-index', modalBackdropZIndex)
+		bodyElement.addClass('modal-open')
 		modalBackdropParent.show()
 		self.modalWindowParent.show(100)
 
@@ -71,6 +72,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 		self.isDialogOpened = false
 		modalBackdropParent.hide()
 		self.modalWindowParent.hide(100)
+		bodyElement.removeClass('modal-open')
 		self.onBeforeClose() if typeof self.onBeforeClose is 'function'
 
 
@@ -84,10 +86,13 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 
 	linking = (self) ->
 
+		bodyElement = bodyElement or angular.element(document).find('body')
+
 		# single backdrop
 
 		modalBackdrop = angular.element(document.querySelector('[modal-backdrop]'))
 		modalBackdropZIndex = modalBackdropZIndex or parseInt(modalBackdrop.css('z-index'), 10)
+		modalBackdrop.css('z-index', modalBackdropZIndex) # because of angular.bootstrap backdrop z-index incrementing
 
 		if not modalBackdropParent
 			modalBackdrop.wrap('<div id="modalBackDropParentId">')
