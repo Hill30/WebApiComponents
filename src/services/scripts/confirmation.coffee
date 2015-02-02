@@ -1,4 +1,4 @@
-hill30Module.factory 'confirmDialogService', [
+hill30Module.factory 'confirmation', [
 	'modalDialogs', '$templateCache'
 	(modalDialogs, $templateCache) ->
 
