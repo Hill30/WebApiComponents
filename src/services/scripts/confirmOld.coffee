@@ -1,16 +1,18 @@
-# todo dhilt : need to remove
-
-hill30Module.factory 'confirmOld', ['$modal', ($modal) ->
+hill30Module.factory 'confirmOld', ['$modal', '$document', ($modal, $document) ->
 
 	confirmStatic = {}
-	confirmStatic.levels = ['default', 'danger']
-	confirmStatic.defaultLevel = 'default'
+	confirmStatic.isInitialized = false
+	confirmStatic.isDialogOpened = false
 
 	confirmStatic.uiDataDefault =
 		title: "Confirmation"
 		text: "Are you sure?"
-		do: "Ok"
-		cancel: "Cancel"
+		doCaption: "Ok"
+		cancelCaption: "Cancel"
+		windowClass: ''
+		doLevel: 'default'
+		cancelLevel: 'default'
+
 
 	confirmStatic.getTemplate = () ->
 		'
@@ -26,51 +28,97 @@ hill30Module.factory 'confirmOld', ['$modal', ($modal) ->
 			</div>
 
 			<div class="modal-footer text-center">
-				<button class="btn btn-default" ng-click="cancel()">{{uiData.cancel}}</button>
-				<button class="btn btn-{{level}}" ng-click="do()">
-					<span class="glyphicon glyphicon-remove-2" ng-show="level == \'danger\'"></span>
-					{{uiData.do}}</button>
+				<button class="btn btn-{{uiData.cancelLevel}}" ng-click="uiData.cancel()">{{uiData.cancelCaption}}</button>
+				<button class="btn btn-{{uiData.doLevel}}" ng-click="uiData.do()">
+					<span class="glyphicon glyphicon-remove-2" ng-show="uiData.doLevel == \'danger\'"></span>
+					{{uiData.doCaption}}</button>
 			</div>
 		</div>'
 
-	confirmStatic.setUiData = ($scope, data) ->
-		$scope.uiData = {}
-		$scope.uiData.title = data.title or confirmStatic.uiDataDefault.title
-		$scope.uiData.text = data.text or confirmStatic.uiDataDefault.text
-		$scope.uiData.cancel = data.cancelCaption or confirmStatic.uiDataDefault.cancel
-		$scope.uiData.do = data.doCaption or confirmStatic.uiDataDefault.do
-		$scope.level = if confirmStatic.levels.indexOf(data.level) isnt -1 then data.level else confirmStatic.defaultLevel
+
+	confirmStatic.configure = (data) ->
+		self = confirmStatic
+		self.uiData = {}
+		self.uiData.windowClass = data.windowClass or self.uiDataDefault.windowClass
+		self.uiData.doLevel = data.doLevel or self.uiDataDefault.doLevel
+		self.uiData.cancelLevel = data.cancelLevel or self.uiDataDefault.cancelLevel
+		self.uiData.title = data.title or self.uiDataDefault.title
+		self.uiData.text = data.text or self.uiDataDefault.text
+		self.uiData.doCaption = data.doCaption or self.uiDataDefault.doCaption
+		self.uiData.cancelCaption = data.cancelCaption or self.uiDataDefault.cancelCaption
+		self.uiData['do'] = () ->
+			self.hideDialog()
+			data['do']() if data['do'] && typeof data['do']  is 'function' 
+		self.uiData['cancel'] = () ->
+			self.hideDialog()
+			data['cancel']() if data['cancel'] && typeof data['cancel']  is 'function'
+		confirmStatic.scope.uiData = confirmStatic.uiData if confirmStatic.scope
+
+
+	confirmStatic.linking = () ->
+		self = confirmStatic
+		
+		modalBackdrop = angular.element('[modal-backdrop]')
+		modalBackdrop.wrap('<div>')
+		self.modalBackdrop = modalBackdrop.parent()
+		modalWindow = angular.element('[modal-window]')
+		modalWindow.wrap('<div>')
+		self.modalWindow = modalWindow.parent()
+
+		handleClick = (event) ->
+			if event.target.hasAttribute('modal-window') or event.target.parentElement.hasAttribute('modal-window')
+				self.hideDialog()
+				event.stopPropagation()
+				event.preventDefault()
+
+		handleEscDown = (event) ->
+			return if not confirmStatic.isDialogOpened or event.which isnt 27
+			self.hideDialog();
+			event.stopPropagation();
+			event.preventDefault();
+
+		self.modalWindow.bind 'click', handleClick
+		$document.bind 'keydown', handleEscDown
+		routeChangeStartUnregister = self.scope.$on '$routeChangeStart', self.hideDialog
+
+		self.scope.$on '$destroy', () ->
+			self.modalWindow.unbind 'click', handleClick
+			$document.unbind 'keydown', handleEscDown
+			routeChangeStartUnregister()
+		
+		confirmStatic.isDialogOpened = true
+
+
+	confirmStatic.showDialog = () ->
+		confirmStatic.isDialogOpened = true
+		confirmStatic.modalBackdrop.show()
+		confirmStatic.modalWindow.show()
+
+	confirmStatic.hideDialog = () ->
+		confirmStatic.isDialogOpened = false
+		confirmStatic.modalBackdrop.hide()
+		confirmStatic.modalWindow.hide(200)
 
 
 	return {
 		openDialog: (confirmObj) ->
+
+			confirmStatic.configure(confirmObj)
+			if confirmStatic.isInitialized
+				confirmStatic.showDialog()
+				return
+
+			confirmStatic.isInitialized = true
+
 			$modal.open
 				template: confirmStatic.getTemplate
-
+				windowClass: confirmStatic.uiData.windowClass
+				backdrop: 'static'
+				keyboard: false
 				controller: ($scope, $modalInstance) ->
-
-					confirmStatic.setUiData $scope, confirmObj
-					confirmStatic.modalInstance = $modalInstance
-
-					routeChangeStartOff = $scope.$on '$routeChangeStart', () ->
-						routeChangeStartOff()
-						$modalInstance.dismiss('cancel')
-
-					$scope.do = () ->
-						routeChangeStartOff()
-						$modalInstance.dismiss('ok')
-						if confirmObj.do and typeof confirmObj.do is 'function'
-							confirmObj.do()
-
-					$scope.cancel = () ->
-						routeChangeStartOff()
-						$modalInstance.dismiss('cancel')
-						if confirmObj.cancel and typeof confirmObj.cancel is 'function'
-							confirmObj.cancel()
-
-				windowClass: ''
-
-				backdrop: true
+					confirmStatic.scope = $scope
+					$scope.uiData = confirmStatic.uiData
+					$modalInstance.opened.then confirmStatic.linking
 
 	}
 ]
