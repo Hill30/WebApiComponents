@@ -34,7 +34,7 @@ hill30Module.service('popup',
 		'
 		<div class="popupBox">
 			<div ng-repeat="item in list">
-				<alert type="item.type" close="close(item)">
+				<alert type="{{item.type}}" close="close(item)">
 					{{item.text}}
 					<div ng-show="item.isFunctional" class="button">
 						<a class="btn btn-default btn-sm" href="" ng-click="item.doAction()">{{item.doCaption}}</a>
