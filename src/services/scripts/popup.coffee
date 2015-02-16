@@ -6,9 +6,9 @@ example:
 popup.show({ type: 'info', text: 'Are you ready for Christmas?', isFunctional: true, doNotCloseAfterAction: true, doCaption: 'Sure', ttl:2500, hideDuplicates: true, do: () -> alert('Good!') })
 
 options:
-type -- info, warning, danger
+type -- success (green), info (blue), warning (yellow), danger (red)
 text -- popup message
-ttl -- the popup will be closed automatically after this time (ms) expires (default value is present)
+ttl -- the popup will be closed automatically after this time (ms) expires (default value is present); "-1" for not auto disappear
 hideDuplicates -- prevents rising of duplicating popups if set
 isFunctional -- a button which provides an action
 do -- an action (callback function) of functional popup
@@ -32,7 +32,7 @@ hill30Module.service('popup',
 
 	getTemplate = () ->
 		'
-		<div class="popupBox">
+		<div class="popupBox" id="webApiComponents.services.popup">
 			<div ng-repeat="item in list">
 				<alert type="{{item.type}}" close="close(item)">
 					{{item.text}}
@@ -76,7 +76,6 @@ hill30Module.service('popup',
 	show = (popupObj) ->
 		idLast++
 		popupObj.id = idLast
-		scope = scope
 
 		ttl = parseInt popupObj.ttl, 10
 		if ttl isnt -1
