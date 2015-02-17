@@ -21,6 +21,7 @@ hill30Module.factory 'confirmation', [
 					caption: options.cancelCaption or 'Cancel'
 					btnClass: options.cancelBtnClass or 'btn-primary'
 					iconClass: options.cancelIconClass
+					do: options.cancelAction
 				,
 					caption: options.confirmCaption or 'Confirm'
 					btnClass: options.confirmBtnClass or 'btn-default'
