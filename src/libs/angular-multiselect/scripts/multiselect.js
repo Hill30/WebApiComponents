@@ -1,5 +1,6 @@
-// Source: https://github.com/amitava82/angular-multiselect
-angular.module('ui.multiselect', [])
+angular.module('ui.multiselect', [
+	'multiselect.tpl.html'
+])
 
 	//from bootstrap-ui typeahead parser
 	.factory('optionParser', ['$parse', function ($parse) {
@@ -51,9 +52,7 @@ angular.module('ui.multiselect', [])
 						scope.$destroy();
 					});
 
-					var popUpEl = angular.element('<multiselect-popup' +
-						(attrs.templateUrl ? (' template-url="' + attrs.templateUrl + '"'): '' ) +
-						'></multiselect-popup>');
+					var popUpEl = angular.element('<multiselect-popup></multiselect-popup>');
 
 					//required validator
 					if (attrs.required || attrs.ngRequired) {
@@ -109,7 +108,7 @@ angular.module('ui.multiselect', [])
 							local[parsedResult.itemName] = model[i];
 							scope.items.push({
 								label: parsedResult.viewMapper(local),
-								model: parsedResult.modelMapper(local),
+								model: model[i],
 								checked: false
 							});
 						}
@@ -119,6 +118,12 @@ angular.module('ui.multiselect', [])
 
 					element.append($compile(popUpEl)(scope));
 
+					if (attrs.msText) { // dhilt, 2015
+						originalScope.$watch(attrs.msText, function(val) {
+							scope.header = val;
+						});
+					}
+
 					function getHeaderText() {
 						if (is_empty(modelCtrl.$modelValue)) return scope.header = attrs.msHeader || 'Select';
 
@@ -126,27 +131,19 @@ angular.module('ui.multiselect', [])
 							if (attrs.msSelected) {
 								scope.header = $interpolate(attrs.msSelected)(scope);
 							} else {
-								if (modelCtrl.$modelValue.length == 1) {
-									for(var i = 0; i < scope.items.length; i++) {
-										if(scope.items[i].model === modelCtrl.$modelValue[0]) {
-											scope.header = scope.items[i].label;
-										}
-									}
-								} else {
-									scope.header = modelCtrl.$modelValue.length + ' ' + 'selected';
-								}
+								scope.header = modelCtrl.$modelValue.length + ' ' + 'selected';
 							}
 
 						} else {
 							var local = {};
 							local[parsedResult.itemName] = modelCtrl.$modelValue;
-							scope.header = parsedResult.viewMapper(local) || scope.items[modelCtrl.$modelValue].label;
+							scope.header = parsedResult.viewMapper(local);
 						}
 					}
 
 					function is_empty(obj) {
-						if (angular.isNumber(obj)) return false;
-						if (obj && obj.length && obj.length > 0) return false;
+						if (!obj) return true;
+						if (obj.length && obj.length > 0) return false;
 						for (var prop in obj) if (obj[prop]) return false;
 						return true;
 					};
@@ -173,7 +170,7 @@ angular.module('ui.multiselect', [])
 					}
 
 					function setModelValue(isMultiple) {
-						var value = null;
+						var value;
 
 						if (isMultiple) {
 							value = [];
@@ -195,9 +192,7 @@ angular.module('ui.multiselect', [])
 						if (!angular.isArray(newVal)) {
 							angular.forEach(scope.items, function (item) {
 								if (angular.equals(item.model, newVal)) {
-									scope.uncheckAll();
 									item.checked = true;
-									setModelValue(false);
 									return false;
 								}
 							});
@@ -245,9 +240,7 @@ angular.module('ui.multiselect', [])
 			restrict: 'E',
 			scope: false,
 			replace: true,
-			templateUrl: function (element, attr) {
-				return attr.templateUrl || 'multiselect.tmpl.html';
-			},
+			templateUrl: 'multiselect.tpl.html',
 			link: function (scope, element, attrs) {
 
 				scope.isVisible = false;
@@ -284,4 +277,25 @@ angular.module('ui.multiselect', [])
 				}
 			}
 		}
+	}]);
+
+angular.module('multiselect.tpl.html', [])
+
+	.run(['$templateCache', function($templateCache) {
+		$templateCache.put('multiselect.tpl.html',
+
+				"<div class=\"btn-group\" style=\"width: 200px;\">\n" +
+				"  <button  style=\"width: 200px; text-align: left;\" type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
+				"   <div style=\"width:100%;\"> {{header}} <span class=\"caret\" style=\"float: right;\"></span></div>\n" +
+				"  </button>\n" +
+				"  <ul class=\"dropdown-menu\">\n" +
+				"    <li>\n" +
+				"      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
+				"    </li>\n" +
+				"    <li ng-repeat=\"i in items | filter:searchText\">\n" +
+				"      <a ng-click=\"select(i); focus()\">\n" +
+				"        <i class=\"glyphicon\" ng-class=\"{'glyphicon-checkmark': i.checked, 'empty': !i.checked}\"></i> {{i.label}}</a>\n" +
+				"    </li>\n" +
+				"  </ul>\n" +
+				"</div>");
 	}]);
