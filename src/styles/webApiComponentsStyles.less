@@ -1,3 +1,4 @@
+/*popupBox*/
 .popupBox {
   width: 250px;
   position: fixed;
@@ -9,3 +10,85 @@
     text-align: center;
   }
 }
+/*!popupBox*/
+
+/*multiselect*/
+multiselect {
+	display: block;
+
+	/*btn-group*/
+	.btn-group {
+		display: block;
+		width: 100%;
+
+		/*button*/
+		> .btn {
+			float: none;
+			text-align: left;
+			display: block;
+			width: 100%;
+			position: relative;
+			padding-right: 18px;
+
+			> .btn-inn {
+				display: block;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				width: 165px;
+			}
+
+			.caret {
+				position: absolute;
+				top: 12px;
+				right: 7px;
+			}
+		}
+		/*!button*/
+
+		/*dropdown-menu*/
+		.dropdown-menu {
+			top: 100%;
+			width: 100%;
+
+			/*li*/
+			li {
+
+				&.li-form-control {
+					padding-left: 3px;
+					padding-right: 3px;
+					margin-bottom: 3px;
+				}
+
+				/*a*/
+				a {
+					position: relative;
+					padding-left: 22px;
+
+					.glyphicon {
+						position: absolute;
+						top: 6px;
+						left: 5px;
+						font-size: 12px;
+						color: @accent-color;
+					}
+
+					&:hover,&:active {
+						.glyphicon {
+							color: #fff;
+						}
+					}
+				}
+				/*!a*/
+
+			}
+			/*!li*/
+
+		}
+		/*!dropdown-menu*/
+
+	}
+	/*!btn-group*/
+
+}
+/*!multiselect*/
