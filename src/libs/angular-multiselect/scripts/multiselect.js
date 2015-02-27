@@ -281,21 +281,21 @@ angular.module('ui.multiselect', [
 
 angular.module('multiselect.tpl.html', [])
 
-    .run(['$templateCache', function($templateCache) {
-        $templateCache.put('multiselect.tpl.html',
+	.run(['$templateCache', function($templateCache) {
+		$templateCache.put('multiselect.tpl.html',
 
-            "<div class=\"btn-group btn-group-sm\">\n" +
-                "  <a type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
-                "   <span class=\"btn-inn\">{{header}} <span class=\"caret\" ></span></span>\n" +
-                "  </a>\n" +
-                "  <ul class=\"dropdown-menu\">\n" +
-                "    <li class=\"li-form-control\">\n" +
-                "      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
-                "    </li>\n" +
-                "    <li ng-repeat=\"i in items | filter:searchText\">\n" +
-                "      <a ng-click=\"select(i); focus()\">\n" +
-                "        <span class=\"glyphicon\" ng-class=\"{'glyphicon-checkmark-2': i.checked, 'empty': !i.checked}\"></span> {{i.label}}</a>\n" +
-                "    </li>\n" +
-                "  </ul>\n" +
-                "</div>");
-    }]);
+				"<div class=\"btn-group btn-group-sm\">\n" +
+				"  <a type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
+				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-placement=\"bottom\">{{text}}<span class=\"caret\" ></span></span>\n" +
+				"  </a>\n" +
+				"  <ul class=\"dropdown-menu\">\n" +
+				"    <li class=\"li-form-control\">\n" +
+				"      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
+				"    </li>\n" +
+				"    <li ng-repeat=\"i in items | filter:searchText\">\n" +
+				"      <a ng-click=\"select(i); focus()\">\n" +
+				"        <span class=\"glyphicon\" ng-class=\"{'glyphicon-checkmark-2': i.checked, 'empty': !i.checked}\"></span> {{i.label}}</a>\n" +
+				"    </li>\n" +
+				"  </ul>\n" +
+				"</div>");
+	}]);
