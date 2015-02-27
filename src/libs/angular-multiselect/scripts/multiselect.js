@@ -120,7 +120,7 @@ angular.module('ui.multiselect', [
 
 					if (attrs.msText) { // dhilt, 2015
 						originalScope.$watch(attrs.msText, function(val) {
-							scope.header = val;
+							scope.text = val;
 						});
 					}
 
