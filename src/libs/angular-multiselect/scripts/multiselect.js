@@ -120,7 +120,7 @@ angular.module('ui.multiselect', [
 
 					if (attrs.msText) { // dhilt, 2015
 						originalScope.$watch(attrs.msText, function(val) {
-							scope.header = val;
+							scope.text = val;
 						});
 					}
 
@@ -286,7 +286,7 @@ angular.module('multiselect.tpl.html', [])
 
 				"<div class=\"btn-group btn-group-sm\">\n" +
 				"  <a type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
-				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-placement=\"bottom\">{{text}}<span class=\"caret\" ></span></span>\n" +
+				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-append-to-body=\"true\"  tooltip-placement=\"top\">{{text}}<span class=\"caret\" ></span></span>\n" +
 				"  </a>\n" +
 				"  <ul class=\"dropdown-menu\">\n" +
 				"    <li class=\"li-form-control\">\n" +
