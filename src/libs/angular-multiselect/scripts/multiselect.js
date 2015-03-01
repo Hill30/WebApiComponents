@@ -118,11 +118,12 @@ angular.module('ui.multiselect', [
 
 					element.append($compile(popUpEl)(scope));
 
-					if (attrs.msText) { // dhilt, 2015
-						originalScope.$watch(attrs.msText, function(val) {
-							scope.text = val;
-						});
-					}
+
+					attrs.$observe('msText', function(newVal) { // (c) dhilt, 2015
+						scope.text = newVal;
+					});
+					scope.noSearch = attrs.msSearch == 'false'; // (c) dhilt, 2015
+
 
 					function getHeaderText() {
 						if (is_empty(modelCtrl.$modelValue)) return scope.header = attrs.msHeader || 'Select';
@@ -289,7 +290,7 @@ angular.module('multiselect.tpl.html', [])
 				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-append-to-body=\"true\"  tooltip-placement=\"top\">{{text}}<span class=\"caret\" ></span></span>\n" +
 				"  </a>\n" +
 				"  <ul class=\"dropdown-menu\">\n" +
-				"    <li class=\"li-form-control\">\n" +
+				"    <li ng-hide=\"noSearch\" class=\"li-form-control\">\n" +
 				"      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
 				"    </li>\n" +
 				"    <li ng-repeat=\"i in items | filter:searchText\">\n" +
