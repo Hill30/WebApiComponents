@@ -235,6 +235,8 @@ angular.module('ui.multiselect', [
 
 					// here and below (c) dhilt, 2015
 
+					scope.tabindex = element.attr('tabindex');
+
 					var handleKeyDown = function (event) {
 						if(event.which === 13 || event.which === 32){ // enter, space
 							if (scope.openSelect()) {
@@ -283,6 +285,8 @@ angular.module('ui.multiselect', [
 					if (element.hasClass('open')) {
 						element.removeClass('open');
 						$document.unbind('click', clickHandler);
+						resetSelectionAndCounter();
+						scope.focusToggler();
 						return true;
 					}
 				};
@@ -300,9 +304,15 @@ angular.module('ui.multiselect', [
 					scope.$apply();
 				}
 
+				var searchElement = element.find('input')[0];
+				var dropdownElement = searchElement.parentElement.parentElement;
+				dropdownElement.tabIndex = scope.tabindex || 0;
+
 				scope.focus = function focus(){
-					var searchBox = element.find('input')[0];
-					searchBox.focus();
+					if(scope.noSearch) {
+						dropdownElement.focus();
+					}
+					searchElement.focus();
 				};
 
 				var elementMatchesAnyInArray = function (element, elementArray) {
@@ -335,6 +345,7 @@ angular.module('ui.multiselect', [
 					}
 				};
 				var resetSelection = function() {
+					if(current < 0) return;
 					var elements = element.find('a');
 					for(var i = elements.length - 1; i > 0; i--) {
 						elements[i].className = elements[i].className.replace('selected', '');
