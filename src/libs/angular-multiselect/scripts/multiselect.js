@@ -231,12 +231,37 @@ angular.module('ui.multiselect', [
 						} else {
 							selectMultiple(item);
 						}
-					}
+					};
+
+					// here and below (c) dhilt, 2015
+
+					var handleKeyDown = function (event) {
+						if(event.which === 13 || event.which === 32){ // enter, space
+							if (scope.openSelect()) {
+								event.stopPropagation();
+								event.preventDefault();
+							}
+						}
+						if(event.which === 9 || event.which === 27){ // tab, esc
+							scope.closeSelect();
+							scope.focusToggler();
+						}
+					};
+
+					scope.focusToggler = function(){
+						element.focus();
+					};
+
+					element.bind('keydown', handleKeyDown);
+
+					scope.$on("$destroy", function () {
+						element.unbind('keydown', handleKeyDown);
+					});
 				}
 			};
 		}])
 
-	.directive('multiselectPopup', ['$document', function ($document) {
+	.directive('multiselectPopup', ['$document', '$filter', function ($document, $filter) {
 		return {
 			restrict: 'E',
 			scope: false,
@@ -246,15 +271,25 @@ angular.module('ui.multiselect', [
 
 				scope.isVisible = false;
 
-				scope.toggleSelect = function () {
-					if (element.hasClass('open')) {
-						element.removeClass('open');
-						$document.unbind('click', clickHandler);
-					} else {
+				scope.openSelect = function () {
+					if (!element.hasClass('open')) {
 						element.addClass('open');
 						$document.bind('click', clickHandler);
 						scope.focus();
+						return true;
 					}
+				};
+				scope.closeSelect = function () {
+					if (element.hasClass('open')) {
+						element.removeClass('open');
+						$document.unbind('click', clickHandler);
+						return true;
+					}
+				};
+
+				scope.toggleSelect = function () {
+					if(!scope.closeSelect())
+						scope.openSelect();
 				};
 
 				function clickHandler(event) {
@@ -268,14 +303,75 @@ angular.module('ui.multiselect', [
 				scope.focus = function focus(){
 					var searchBox = element.find('input')[0];
 					searchBox.focus();
-				}
+				};
 
 				var elementMatchesAnyInArray = function (element, elementArray) {
 					for (var i = 0; i < elementArray.length; i++)
 						if (element == elementArray[i])
 							return true;
 					return false;
-				}
+				};
+
+				var current = -1;
+				var itemsCounter = -1;
+				var countItems = function () {
+					if(itemsCounter >= 0) {
+						return itemsCounter;
+					}
+					return itemsCounter = element.find('a').length - 2;
+				};
+				var getItem = function (position) {
+					var elt = element.find('a')[position + 1];
+					if(!elt) return;
+					return angular.element(elt);
+				};
+				var toggleCurrentSelection = function() {
+					if (current !== -1) {
+						var item = getItem(current);
+						if(!item) return;
+						if(item.hasClass('selected'))
+							item.removeClass('selected');
+						else item.addClass('selected');
+					}
+				};
+				var resetSelection = function() {
+					var elements = element.find('a');
+					for(var i = elements.length - 1; i > 0; i--) {
+						elements[i].className = elements[i].className.replace('selected', '');
+					}
+					current = -1;
+				};
+				var resetSelectionAndCounter = function() {
+					resetSelection();
+					itemsCounter = -1;
+				};
+
+				var handleKeyDown = function (event) {
+					if(event.which === 38 || event.which === 40) { // up, down
+						toggleCurrentSelection();
+						if(event.which === 38 && --current < 0) current = countItems();
+						if(event.which === 40 && ++current > countItems()) current = 0;
+						toggleCurrentSelection();
+					}
+					else if (event.which === 13 || event.which === 32) { //enter, space
+						var list = $filter('filter')(scope.items, scope.searchText);
+						scope.select(list[current]);
+					}
+					else if (event.which === 9 || event.which === 27) { // tab, esc
+						return resetSelection();
+					}
+					else return;
+					event.stopPropagation();
+					event.preventDefault();
+				};
+
+				scope.$watch('searchText.label', resetSelectionAndCounter);
+
+				element.bind('keydown', handleKeyDown);
+
+				scope.$on("$destroy", function () {
+					element.unbind('keydown', handleKeyDown);
+				});
 			}
 		}
 	}]);
