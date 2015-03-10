@@ -29,6 +29,7 @@ multiselect {
 			width: 100%;
 			position: relative;
 			padding-right: 18px;
+			height: 30px;
 
 			> .btn-inn {
 				display: block;
@@ -50,9 +51,12 @@ multiselect {
 		.dropdown-menu {
 			top: 100%;
 			width: 100%;
+			max-height: 200px;
+			overflow-y: scroll;
 
 			/*li*/
 			li {
+				margin-bottom: 1px;
 
 				&.li-form-control {
 					padding-left: 3px;
@@ -65,6 +69,7 @@ multiselect {
 					position: relative;
 					padding-left: 22px;
 
+					/*glyphicon*/
 					.glyphicon {
 						position: absolute;
 						top: 6px;
@@ -72,12 +77,28 @@ multiselect {
 						font-size: 12px;
 						color: @accent-color;
 					}
+					/*glyphicon*/
 
+					/*hover/active*/
 					&:hover,&:active {
 						.glyphicon {
 							color: #fff;
 						}
 					}
+					/*!hover/active*/
+
+					/*selected*/
+					&.selected {
+						color: #fff;
+						background: @accent-color;
+						cursor: default;
+
+						.glyphicon {
+							color: #fff;
+						}
+					}
+					/*!selected*/
+
 				}
 				/*!a*/
 

@@ -118,11 +118,12 @@ angular.module('ui.multiselect', [
 
 					element.append($compile(popUpEl)(scope));
 
-					if (attrs.msText) { // dhilt, 2015
-						originalScope.$watch(attrs.msText, function(val) {
-							scope.text = val;
-						});
-					}
+
+					attrs.$observe('msText', function(newVal) { // (c) dhilt, 2015
+						scope.text = newVal;
+					});
+					scope.noSearch = attrs.msSearch == 'false'; // (c) dhilt, 2015
+
 
 					function getHeaderText() {
 						if (is_empty(modelCtrl.$modelValue)) return scope.header = attrs.msHeader || 'Select';
@@ -230,12 +231,39 @@ angular.module('ui.multiselect', [
 						} else {
 							selectMultiple(item);
 						}
-					}
+					};
+
+					// here and below (c) dhilt, 2015
+
+					scope.tabindex = element.attr('tabindex');
+
+					var handleKeyDown = function (event) {
+						if(event.which === 13 || event.which === 32){ // enter, space
+							if (scope.openSelect()) {
+								event.stopPropagation();
+								event.preventDefault();
+							}
+						}
+						if(event.which === 9 || event.which === 27){ // tab, esc
+							scope.closeSelect();
+							scope.focusToggler();
+						}
+					};
+
+					scope.focusToggler = function(){
+						element.focus();
+					};
+
+					element.bind('keydown', handleKeyDown);
+
+					scope.$on("$destroy", function () {
+						element.unbind('keydown', handleKeyDown);
+					});
 				}
 			};
 		}])
 
-	.directive('multiselectPopup', ['$document', function ($document) {
+	.directive('multiselectPopup', ['$document', '$filter', function ($document, $filter) {
 		return {
 			restrict: 'E',
 			scope: false,
@@ -245,15 +273,27 @@ angular.module('ui.multiselect', [
 
 				scope.isVisible = false;
 
-				scope.toggleSelect = function () {
-					if (element.hasClass('open')) {
-						element.removeClass('open');
-						$document.unbind('click', clickHandler);
-					} else {
+				scope.openSelect = function () {
+					if (!element.hasClass('open')) {
 						element.addClass('open');
 						$document.bind('click', clickHandler);
 						scope.focus();
+						return true;
 					}
+				};
+				scope.closeSelect = function () {
+					if (element.hasClass('open')) {
+						element.removeClass('open');
+						$document.unbind('click', clickHandler);
+						resetSelectionAndCounter();
+						scope.focusToggler();
+						return true;
+					}
+				};
+
+				scope.toggleSelect = function () {
+					if(!scope.closeSelect())
+						scope.openSelect();
 				};
 
 				function clickHandler(event) {
@@ -264,17 +304,85 @@ angular.module('ui.multiselect', [
 					scope.$apply();
 				}
 
+				var searchElement = element.find('input')[0];
+				var dropdownElement = searchElement.parentElement.parentElement;
+				dropdownElement.tabIndex = scope.tabindex || 0;
+
 				scope.focus = function focus(){
-					var searchBox = element.find('input')[0];
-					searchBox.focus();
-				}
+					if(scope.noSearch) {
+						dropdownElement.focus();
+					}
+					searchElement.focus();
+				};
 
 				var elementMatchesAnyInArray = function (element, elementArray) {
 					for (var i = 0; i < elementArray.length; i++)
 						if (element == elementArray[i])
 							return true;
 					return false;
-				}
+				};
+
+				var current = -1;
+				var itemsCounter = -1;
+				var countItems = function () {
+					if(itemsCounter >= 0) {
+						return itemsCounter;
+					}
+					return itemsCounter = element.find('a').length - 2;
+				};
+				var getItem = function (position) {
+					var elt = element.find('a')[position + 1];
+					if(!elt) return;
+					return angular.element(elt);
+				};
+				var toggleCurrentSelection = function() {
+					if (current !== -1) {
+						var item = getItem(current);
+						if(!item) return;
+						if(item.hasClass('selected'))
+							item.removeClass('selected');
+						else item.addClass('selected');
+					}
+				};
+				var resetSelection = function() {
+					if(current < 0) return;
+					var elements = element.find('a');
+					for(var i = elements.length - 1; i > 0; i--) {
+						elements[i].className = elements[i].className.replace('selected', '');
+					}
+					current = -1;
+				};
+				var resetSelectionAndCounter = function() {
+					resetSelection();
+					itemsCounter = -1;
+				};
+
+				var handleKeyDown = function (event) {
+					if(event.which === 38 || event.which === 40) { // up, down
+						toggleCurrentSelection();
+						if(event.which === 38 && --current < 0) current = countItems();
+						if(event.which === 40 && ++current > countItems()) current = 0;
+						toggleCurrentSelection();
+					}
+					else if (event.which === 13 || event.which === 32) { //enter, space
+						var list = $filter('filter')(scope.items, scope.searchText);
+						scope.select(list[current]);
+					}
+					else if (event.which === 9 || event.which === 27) { // tab, esc
+						return resetSelection();
+					}
+					else return;
+					event.stopPropagation();
+					event.preventDefault();
+				};
+
+				scope.$watch('searchText.label', resetSelectionAndCounter);
+
+				element.bind('keydown', handleKeyDown);
+
+				scope.$on("$destroy", function () {
+					element.unbind('keydown', handleKeyDown);
+				});
 			}
 		}
 	}]);
@@ -286,10 +394,10 @@ angular.module('multiselect.tpl.html', [])
 
 				"<div class=\"btn-group btn-group-sm\">\n" +
 				"  <a type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
-				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-placement=\"bottom\">{{text}}<span class=\"caret\" ></span></span>\n" +
+				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-append-to-body=\"true\"  tooltip-placement=\"top\">{{text}}<span class=\"caret\" ></span></span>\n" +
 				"  </a>\n" +
 				"  <ul class=\"dropdown-menu\">\n" +
-				"    <li class=\"li-form-control\">\n" +
+				"    <li ng-hide=\"noSearch\" class=\"li-form-control\">\n" +
 				"      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
 				"    </li>\n" +
 				"    <li ng-repeat=\"i in items | filter:searchText\">\n" +
