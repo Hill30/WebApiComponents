@@ -9,6 +9,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 	modalBackdropZIndex = null
 
 	getTemplate = (self) ->
+		templateId = self.id + if !self.isPath then commonTemplateId else ''
 		'
 		<div>
 			<div class="modal-header">
@@ -17,7 +18,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 				</h4>
 			</div>
 
-			<div class="modal-body">' + $templateCache.get(self.id + commonTemplateId) + '</div>
+			<div class="modal-body">' + $templateCache.get(templateId) + '</div>
 
 			<div class="modal-footer text-center">
 				<span ng-repeat="action in uiData.actions">
@@ -150,11 +151,12 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 					showDialog(self)
 
 
-	instance = (id) ->
+	instance = (id, isPath) ->
 		for dlg in dialogList
 			return dlg if dlg.id is id
 		newDlg =
 			id: id
+			isPath: isPath
 			isInitialized: false
 			isDialogOpened: false
 			self: {}
