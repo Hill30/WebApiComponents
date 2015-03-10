@@ -78,8 +78,9 @@ hill30Module.service 'cookies', ['$location'
 			$location.search cookieParams
 
 		clearRouteParamsCookie = () ->
-			return if not isCookieExists(routeParamsCookiePrefix)
-			setCookie(routeParamsCookiePrefix, '')
+			return if not isRouteParamsCookieExists()
+			$location.search ''
+			setCookie(getRouteParamsCookieName(), '')
 
 		{
 		setCookie: setCookie
