@@ -1,6 +1,7 @@
-hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	($modal, $document, $templateCache) ->
+hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '$filter',	($modal, $document, $templateCache, $filter) ->
 
 	dialogList = []
+	openedDialogList = []
 
 	commonTemplateId = 'ModalDialogTemplateId'
 	bodyElement = null
@@ -63,26 +64,45 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 
 
 	showDialog = (self) ->
+		openedDialogList.push self
 		self.isDialogOpened = true
-		bodyElement.addClass('modal-open')
-		modalBackdropParent.show()
+		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of showing dialog
 		self.modalWindowParent.show(100)
+		setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the current dialog
 
+		if openedDialogList.length is 1 # show back-drop if there is one (first) dialog
+			bodyElement.addClass('modal-open')
+			modalBackdropParent.show()
 
 	hideDialog = (self) ->
+		for dlg, i in openedDialogList
+			openedDialogList.splice(i, 1) if self is dlg
 		self.isDialogOpened = false
-		modalBackdropParent.hide()
+		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of hiding dialog
 		self.modalWindowParent.hide(100)
-		bodyElement.removeClass('modal-open')
+		setModalBackdropZIndex(zIndex - 2*10) # move backdrop under the dialog which is the next after closing one
+
+		if openedDialogList.length is 0 # hide back-drop when there are no dialogs
+			modalBackdropParent.hide()
+			bodyElement.removeClass('modal-open')
+
 		self.onBeforeClose() if typeof self.onBeforeClose is 'function'
 
-
 	hideAllDialogs = (force) ->
-		for dlg in dialogList
-			continue unless dlg.isDialogOpened
-			return if not force and not dlg.autoClose
-			hideDialog(dlg)
-			return true
+		i = openedDialogList.length - 1
+		while dlg = openedDialogList[i--]
+			if force or dlg.autoClose
+				hideDialog(dlg)
+				continue
+			return false
+		return true
+
+	setModalBackdropZIndex = (zIndex) ->
+		modalBackdrop = angular.element(document.querySelector('[modal-backdrop]'))
+		if isNaN(zIndex = parseInt(zIndex, 10))
+			modalBackdropZIndex = modalBackdropZIndex or parseInt(modalBackdrop.css('z-index'), 10) # todo dhilt : check it, probably this logic can be removed
+			zIndex = modalBackdropZIndex
+		modalBackdrop.css('z-index', zIndex)
 
 
 	linking = (self) ->
@@ -90,11 +110,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', 	
 		bodyElement = bodyElement or angular.element(document).find('body')
 
 		# single backdrop
-
-		modalBackdrop = angular.element(document.querySelector('[modal-backdrop]'))
-		modalBackdropZIndex = modalBackdropZIndex or parseInt(modalBackdrop.css('z-index'), 10)
-		modalBackdrop.css('z-index', modalBackdropZIndex) # because of angular.bootstrap backdrop z-index incrementing
-
+		setModalBackdropZIndex()
 		if not modalBackdropParent
 			modalBackdrop.wrap('<div id="modalBackDropParentId">')
 			modalBackdropParent = modalBackdrop.parent()
