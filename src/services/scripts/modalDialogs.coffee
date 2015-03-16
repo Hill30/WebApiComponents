@@ -37,6 +37,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self.uiData = {}
 
 		self.autoClose = if configObj.hasOwnProperty('autoClose') then configObj.autoClose else true
+		self.onBeforeShow = configObj.onBeforeShow
 		self.onBeforeClose = configObj.onBeforeClose
 
 		self.uiData.data = {}
@@ -63,8 +64,11 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self
 
 
-	showDialog = (self) ->
+	showDialog = (self, options = {}) ->
 		openedDialogList.push self
+
+		self.onBeforeShow() if not options.preventOnBeforeShow and typeof self.onBeforeShow is 'function'
+
 		self.isDialogOpened = true
 		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of showing dialog
 		self.modalWindowParent.show(100)
@@ -74,9 +78,14 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			bodyElement.addClass('modal-open')
 			modalBackdropParent.show()
 
-	hideDialog = (self) ->
+	hideDialog = (self, options = {}) ->
 		for dlg, i in openedDialogList
-			openedDialogList.splice(i, 1) if self is dlg
+			if self is dlg
+				openedDialogList.splice(i, 1)
+				break
+
+		self.onBeforeClose() if not options.preventOnBeforeClose and typeof self.onBeforeClose is 'function'
+
 		self.isDialogOpened = false
 		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of hiding dialog
 		self.modalWindowParent.hide(100)
@@ -85,8 +94,6 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		if openedDialogList.length is 0 # hide back-drop when there are no dialogs
 			modalBackdropParent.hide()
 			bodyElement.removeClass('modal-open')
-
-		self.onBeforeClose() if typeof self.onBeforeClose is 'function'
 
 	hideAllDialogs = (force) ->
 		i = openedDialogList.length - 1
@@ -178,6 +185,8 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			self: {}
 			configure: configure
 			openDialog: openDialog
+			closeDialog: () ->
+				hideDialog(newDlg, preventOnBeforeClose: true)
 		dialogList.push newDlg
 		newDlg
 
