@@ -18,7 +18,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 					{{uiData.title}}
 				</h4>
 			</div>
-			<div class="modal-body">' + $templateCache.get(templateId + commonTemplateId) + '</div>
+			<div class="modal-body">' + $templateCache.get(self.id + commonTemplateId) + '</div>
 			<div class="modal-footer text-center">
 				<span ng-repeat="action in uiData.actions">
 					<button class="btn {{action.btnClass}}" ng-click="action.do()">
