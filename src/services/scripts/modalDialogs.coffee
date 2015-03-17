@@ -9,19 +9,8 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 	modalBackdropParent = null
 	modalBackdropZIndex = null
 
-
-	getActionsTemplate = (self) ->
-		return $templateCache.get(self.actionsTemplateId) if self.actionsTemplateId
-
-		'<span ng-repeat="action in uiData.actions">
-			<button class="btn {{action.btnClass}}" ng-click="action.do()">
-				<span class="glyphicon {{action.iconClass}}" ng-show="action.iconClass"></span>
-				{{action.caption}}
-			</button>
-		</span>';
-
 	getTemplate = (self) ->
-		templateId = self.id + if !self.isPath then commonTemplateId else ''
+		return $templateCache.get(self.id) if self.isPath
 		'
 		<div>
 			<div class="modal-header">
@@ -29,8 +18,15 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 					{{uiData.title}}
 				</h4>
 			</div>
-			<div class="modal-body">' + $templateCache.get(templateId) + '</div>
-			<div class="modal-footer text-center">' + getActionsTemplate(self) + '</div>
+			<div class="modal-body">' + $templateCache.get(templateId + commonTemplateId) + '</div>
+			<div class="modal-footer text-center">
+				<span ng-repeat="action in uiData.actions">
+					<button class="btn {{action.btnClass}}" ng-click="action.do()">
+					<span class="glyphicon {{action.iconClass}}" ng-show="action.iconClass"></span>
+						{{action.caption}}
+					</button>
+				</span>
+			</div>
 		</div>'
 
 
@@ -50,9 +46,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self.uiData.iconClass = configObj.iconClass or ''
 		self.uiData.title = configObj.title or ''
 
-		if typeof configObj.actions is 'string'
-			self.actionsTemplateId = configObj.actions
-		else if configObj.actions and configObj.actions.length > 0
+		if configObj.actions and configObj.actions.length > 0
 			self.uiData.actions = []
 			for i in [0..configObj.actions.length - 1]
 				action = configObj.actions[i]
