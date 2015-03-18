@@ -86,9 +86,14 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self.onBeforeClose() if not options.preventOnBeforeClose and typeof self.onBeforeClose is 'function'
 
 		self.isDialogOpened = false
-		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of hiding dialog
 		self.modalWindowParent.hide(100)
-		setModalBackdropZIndex(zIndex - 2*10) # move backdrop under the dialog which is the next after closing one
+
+		if not openedDialogList.length
+			setModalBackdropZIndex(modalBackdropZIndex) # move backdrop to the default layer
+		else
+			lastOpenedDialog = openedDialogList[openedDialogList.length - 1]
+			zIndex = lastOpenedDialog.modalWindowParent.children()[0].style.zIndex
+			setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the last opened dialog
 
 		if openedDialogList.length is 0 # hide back-drop when there are no dialogs
 			modalBackdropParent.hide()
