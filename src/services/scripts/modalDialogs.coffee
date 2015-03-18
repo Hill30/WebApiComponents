@@ -190,8 +190,8 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			self: {}
 			configure: configure
 			openDialog: openDialog
-			closeDialog: () ->
-				hideDialog(newDlg, preventOnBeforeClose: true)
+			closeDialog: (options) ->
+				hideDialog(newDlg, options)
 		dialogList.push newDlg
 		newDlg
 
