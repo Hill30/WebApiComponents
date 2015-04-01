@@ -123,6 +123,7 @@ angular.module('ui.multiselect', [
 						scope.text = newVal;
 					});
 					scope.noSearch = attrs.msSearch == 'false'; // (c) dhilt, 2015
+					scope.msReset = attrs.msReset;  // (c) dhilt, 2015
 
 
 					function getHeaderText() {
@@ -383,6 +384,16 @@ angular.module('ui.multiselect', [
 				scope.$on("$destroy", function () {
 					element.unbind('keydown', handleKeyDown);
 				});
+
+				// dhilt : to be able to reset dropdown's selection and search input outside of the directive
+				if(scope.msReset) {
+					scope.$watch(scope.msReset, function (val) {
+						if(angular.isDefined(val)) {
+							scope.searchText = {};
+							scope.uncheckAll();
+						}
+					});
+				}
 			}
 		}
 	}]);

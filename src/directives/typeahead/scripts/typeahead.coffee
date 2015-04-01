@@ -1,6 +1,6 @@
 # this directive was taken from EPL-product "ymusica"
 # https://github.com/eyston/ymusica
-# and transleted from js into coffee and improved by dhilt, 2014
+# and translated from js into coffee and improved by dhilt, 2014
 
 hill30Module.directive "typeahead", ["$timeout", ($timeout) ->
 
