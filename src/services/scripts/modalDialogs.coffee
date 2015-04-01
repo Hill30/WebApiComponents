@@ -63,17 +63,26 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self
 
 
+	getDialogZIndex = (dlg) -> dlg.modalWindowParent.children()[0].style.zIndex
+	setDialogZIndex = (dlg, zIndex) -> dlg.modalWindowParent.children()[0].style.zIndex = zIndex
+
 	showDialog = (self, options = {}) ->
-		openedDialogList.push self
 
 		self.onBeforeShow() if not options.preventOnBeforeShow and typeof self.onBeforeShow is 'function'
 
+		if openedDialogList.length > 0 # get z-index of the previous opened dialog
+			zIndexPrev = getDialogZIndex(openedDialogList[openedDialogList.length - 1])
+
+		openedDialogList.push self
 		self.isDialogOpened = true
-		zIndex = self.modalWindowParent.children()[0].style.zIndex # z-index of showing dialog
-		self.modalWindowParent.show(100)
+
+		setDialogZIndex(self, zIndexPrev + 10) if zIndexPrev # raise z-index of the current dialog if there is any opened one
+		zIndex = getDialogZIndex(self)
 		setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the current dialog
 
-		if openedDialogList.length is 1 # show back-drop if there is one (first) dialog
+		self.modalWindowParent.show(100)
+
+		if openedDialogList.length is 1 # show backdrop only for the 1st opening of some dialog
 			bodyElement.addClass('modal-open')
 			modalBackdropParent.show()
 
@@ -92,7 +101,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			setModalBackdropZIndex(modalBackdropZIndex) # move backdrop to the default layer
 		else
 			lastOpenedDialog = openedDialogList[openedDialogList.length - 1]
-			zIndex = lastOpenedDialog.modalWindowParent.children()[0].style.zIndex
+			zIndex = getDialogZIndex(lastOpenedDialog)
 			setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the last opened dialog
 
 		if openedDialogList.length is 0 # hide back-drop when there are no dialogs
