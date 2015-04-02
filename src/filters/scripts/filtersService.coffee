@@ -31,10 +31,14 @@ hill30Module
 					console.log filters
 					filters
 
+			getFilter = (label) ->
+				filters[label]
+
 			{
 				initFilters
 				setFilter
 				unsetFilter
 				getFilters
+				getFilter
 			}
 	])
