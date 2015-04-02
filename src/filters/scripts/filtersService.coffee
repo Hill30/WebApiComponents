@@ -14,12 +14,13 @@ hill30Module
 			setFilter = (label, value, search = true) ->
 				if filters[label] != value
 					filters[label] = value
-					$location.search getFilters(filtersToExclude) if search
+					$location.search(label, value) if search
+				$location.search(label, null) if not search
 				true
 
 			unsetFilter = (label) ->
 				delete filters[label]
-				$location.search getFilters(filtersToExclude)
+				$location.search(label, null)
 				true
 
 			getFilters = (exclude) ->
@@ -28,7 +29,6 @@ hill30Module
 				else
 					angular.forEach filtersToExclude, (value) ->
 						delete filters[value]
-					console.log filters
 					filters
 
 			getFilter = (label) ->
