@@ -9,6 +9,9 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 	modalBackdropParent = null
 	modalBackdropZIndex = null
 
+	getTemplateId = (self) ->
+		return self.id + if !self.inCache or !self.inCache.body then commonTemplateId else ''
+
 	getTemplate = (self) ->
 		return $templateCache.get(self.id) if self.inCache and self.inCache.all
 		'
@@ -18,9 +21,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 					{{uiData.title}}
 				</h4>
 			</div>
-			<div class="modal-body">
-			' + $templateCache.get(self.id + if !self.inCache or !self.inCache.body then commonTemplateId else '') + '
-			</div>
+			<div class="modal-body">' + getTemplateId(self) + '</div>
 			<div class="modal-footer text-center">
 				<span ng-repeat="action in uiData.actions">
 					<button class="btn {{action.btnClass}}" ng-click="action.do()">
@@ -151,7 +152,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		for modalWindow in modalWindows
 			if modalWindow.parentElement.nodeName is "BODY"
 				elt = angular.element(modalWindow)
-				elt.wrap('<div id="' + self.id + commonTemplateId + '">')
+				elt.wrap('<div id="' + getTemplateId(self) + '">')
 				self.modalWindowParent = elt.parent()
 				break
 
