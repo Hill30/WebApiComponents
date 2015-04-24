@@ -10,7 +10,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 	modalBackdropZIndex = null
 
 	getTemplateId = (self) ->
-		return self.id + if !self.inCache or !self.inCache.body then commonTemplateId else ''
+		return self.id + if !self.inCache or !(self.inCache.all or self.inCache.body) then commonTemplateId else ''
 
 	getTemplate = (self) ->
 		return $templateCache.get(self.id) if self.inCache and self.inCache.all
