@@ -97,10 +97,11 @@ hill30Module.service('popup',
 			for item, index in list
 				if isEqual item, popupObj
 					close item
-					break
 
 		list.push popupObj
 		scope.$apply() unless scope.$$phase
+
+		() -> close(popupObj)
 
 
 	return {

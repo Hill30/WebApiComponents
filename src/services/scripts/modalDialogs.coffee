@@ -66,7 +66,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self
 
 
-	getDialogZIndex = (dlg) -> dlg.modalWindowParent.children()[0].style.zIndex
+	getDialogZIndex = (dlg) -> parseInt(dlg.modalWindowParent.children()[0].style.zIndex, 10)
 	setDialogZIndex = (dlg, zIndex) -> dlg.modalWindowParent.children()[0].style.zIndex = zIndex
 
 	showDialog = (self, options = {}) ->
