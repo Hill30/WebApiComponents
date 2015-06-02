@@ -236,6 +236,8 @@ angular.module('ui.multiselect', [
 
 					// here and below (c) dhilt, 2015
 
+					var programFocus = false;
+
 					scope.$watch(function() { return element.attr('tabindex'); }, function () {
 						scope.tabindex = element.attr('tabindex');
 					});
@@ -255,13 +257,23 @@ angular.module('ui.multiselect', [
 					};
 
 					scope.focusToggler = function(){
+						programFocus = true;
 						element.focus();
 					};
 
+					var handleFocus = function () {
+						if (programFocus) {
+							return programFocus = false;
+						}
+						scope.openSelect();
+					};
+
 					element.bind('keydown', handleKeyDown);
+					element.bind('focus', handleFocus);
 
 					scope.$on("$destroy", function () {
 						element.unbind('keydown', handleKeyDown);
+						element.unbind('focus', handleFocus);
 					});
 				}
 			};
