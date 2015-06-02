@@ -236,6 +236,9 @@ angular.module('ui.multiselect', [
 
 					// here and below (c) dhilt, 2015
 
+					scope.$watch(element.attr('tabindex'), function () {
+						scope.tabindex = element.attr('tabindex');
+					});
 					scope.tabindex = element.attr('tabindex');
 
 					var handleKeyDown = function (event) {
@@ -307,7 +310,11 @@ angular.module('ui.multiselect', [
 
 				var searchElement = element.find('input')[0];
 				var dropdownElement = searchElement.parentElement.parentElement;
+
 				dropdownElement.tabIndex = scope.tabindex || 0;
+				scope.$watch('tabindex', function () { // dhilt : to make tabindex dynamic
+					dropdownElement.tabIndex = scope.tabindex;
+				});
 
 				scope.focus = function focus(){
 					if(scope.noSearch) {
