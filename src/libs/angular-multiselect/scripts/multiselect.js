@@ -257,10 +257,9 @@ angular.module('ui.multiselect', [
 					};
 
 					var handleClick = function (event) {
-						if (scope.openSelect()) {
-							event.stopPropagation();
-							event.preventDefault();
-						}
+						scope.openSelect();
+						event.stopPropagation();
+						event.preventDefault();
 					};
 
 					scope.focusToggler = function(){
