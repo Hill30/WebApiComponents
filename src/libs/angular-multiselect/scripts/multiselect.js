@@ -256,6 +256,13 @@ angular.module('ui.multiselect', [
 						}
 					};
 
+					var handleClick = function (event) {
+						if (scope.openSelect()) {
+							event.stopPropagation();
+							event.preventDefault();
+						}
+					};
+
 					scope.focusToggler = function(){
 						programFocus = true;
 						element.focus();
@@ -269,10 +276,12 @@ angular.module('ui.multiselect', [
 					};
 
 					element.bind('keydown', handleKeyDown);
+					element.bind('click', handleClick);
 					element.bind('focus', handleFocus);
 
 					scope.$on("$destroy", function () {
 						element.unbind('keydown', handleKeyDown);
+						element.unbind('click', handleClick);
 						element.unbind('focus', handleFocus);
 					});
 				}
