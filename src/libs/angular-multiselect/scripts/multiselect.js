@@ -228,7 +228,7 @@ angular.module('ui.multiselect', [
 					scope.select = function (item) {
 						if (isMultiple === false) {
 							selectSingle(item);
-							scope.toggleSelect();
+							scope.closeSelect();
 						} else {
 							selectMultiple(item);
 						}
@@ -442,7 +442,7 @@ angular.module('multiselect.tpl.html', [])
 				"      <input class=\"form-control input-sm\" type=\"text\" ng-model=\"searchText.label\" autofocus=\"autofocus\" placeholder=\"Filter\" />\n" +
 				"    </li>\n" +
 				"    <li ng-repeat=\"i in items | filter:searchText\">\n" +
-				"      <a ng-click=\"select(i); focus()\">\n" +
+				"      <a ng-click=\"select(i); $event.stopPropagation();\">\n" +
 				"        <span class=\"glyphicon\" ng-class=\"{'glyphicon-checkmark-2': i.checked, 'empty': !i.checked}\"></span> {{i.label}}</a>\n" +
 				"    </li>\n" +
 				"  </ul>\n" +
