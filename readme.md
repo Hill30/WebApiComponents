@@ -1,8 +1,14 @@
 ### Release changelog
 
+## v1.3.0
+* Angular 1.3
+* new multiselect directive
+* modalDialogs improvements, fixes
+
+
 ## v1.2.0
 * new modalDialogs factory
-* confirmation factory (based on modalDialogs) instead of old confirm
+* confirmation factory (based on modalDialogs) instead of old confirm service
 
 ## v1.1.1+
 
