@@ -2,7 +2,7 @@
 # https://github.com/eyston/ymusica
 # and translated from js into coffee and improved by dhilt, 2014
 
-hill30Module.directive "typeahead", ["$timeout", ($timeout) ->
+hill30Module.directive "typeAhead", ["$timeout", ($timeout) ->
 
 	restrict: "E"
 	transclude: true
@@ -116,8 +116,8 @@ hill30Module.directive "typeahead", ["$timeout", ($timeout) ->
 				$list.css "display", "none"
 ]
 
-hill30Module.directive "typeaheadItem", ->
-	require: "^typeahead"
+hill30Module.directive "typeAheadItem", ->
+	require: "^typeAhead"
 
 	link: (scope, element, attrs, controller) ->
 		item = scope.$eval(attrs.typeaheadItem)
