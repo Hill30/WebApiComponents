@@ -4,7 +4,7 @@
 * Angular 1.3
 * new multiselect directive
 * modalDialogs improvements, fixes
-
+* rename ymusica typeahead directive to typeAhead
 
 ## v1.2.0
 * new modalDialogs factory
