@@ -120,7 +120,7 @@ hill30Module.directive "typeAheadItem", ->
 	require: "^typeAhead"
 
 	link: (scope, element, attrs, controller) ->
-		item = scope.$eval(attrs.typeaheadItem)
+		item = scope.$eval(attrs.typeAheadItem)
 		scope.$watch (->
 			controller.isActive item
 		), (active) ->
