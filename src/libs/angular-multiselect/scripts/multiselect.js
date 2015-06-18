@@ -38,7 +38,7 @@ angular.module('ui.multiselect', [
 
 					var exp = attrs.options,
 						parsedResult = optionParser.parse(exp),
-						isMultiple = attrs.multiple ? true : false,
+						isMultiple = attrs.multiple && attrs.multiple !== 'false',
 						required = false,
 						scope = originalScope.$new(),
 						changeHandler = attrs.change || angular.noop;
@@ -163,15 +163,15 @@ angular.module('ui.multiselect', [
 							scope.uncheckAll();
 							item.checked = !item.checked;
 						}
-						setModelValue(false);
+						setModelValue();
 					}
 
 					function selectMultiple(item) {
 						item.checked = !item.checked;
-						setModelValue(true);
+						setModelValue();
 					}
 
-					function setModelValue(isMultiple) {
+					function setModelValue() {
 						var value;
 
 						if (isMultiple) {
@@ -215,14 +215,14 @@ angular.module('ui.multiselect', [
 						angular.forEach(scope.items, function (item) {
 							item.checked = true;
 						});
-						setModelValue(true);
+						setModelValue();
 					};
 
 					scope.uncheckAll = function () {
 						angular.forEach(scope.items, function (item) {
 							item.checked = false;
 						});
-						setModelValue(true);
+						setModelValue();
 					};
 
 					scope.select = function (item) {
