@@ -1,6 +1,6 @@
 ### Release changelog
 
-## v1.3.0
+## v1.3.0+
 * Angular 1.3
 * new multiselect directive
 * modalDialogs improvements, fixes
@@ -22,7 +22,7 @@
 * common custom styles (webApiComponentsStyles.less)
 * popup is service now, directive removing
 
-## v1.0.*
+## v1.0.0+
 
 * Repository major refactoring
 * httpInterceptor refactoring
