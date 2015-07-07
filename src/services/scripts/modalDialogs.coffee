@@ -70,16 +70,20 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 	setDialogZIndex = (dlg, zIndex) -> dlg.modalWindowParent.children()[0].style.zIndex = zIndex
 
 	showDialog = (self, options = {}) ->
+		return if self.isDialogOpened # please close the dialog before open it again
 
 		self.onBeforeShow() if not options.preventOnBeforeShow and typeof self.onBeforeShow is 'function'
 
 		if openedDialogList.length > 0 # get z-index of the previous opened dialog
-			zIndexPrev = getDialogZIndex(openedDialogList[openedDialogList.length - 1])
+			zIndexPrev = 0
+			for dlg in openedDialogList
+				zIndexTemp = getDialogZIndex(dlg)
+				zIndexPrev = zIndexTemp if zIndexTemp > zIndexPrev
 
 		openedDialogList.push self
 		self.isDialogOpened = true
 
-		setDialogZIndex(self, zIndexPrev + 10) if zIndexPrev # raise z-index of the current dialog if there is any opened one
+		setDialogZIndex(self, zIndexPrev + 10) if zIndexPrev # increase z-index of current dialog if there is any opened one
 		zIndex = getDialogZIndex(self)
 		setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the current dialog
 
