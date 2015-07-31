@@ -109,7 +109,7 @@ angular.module('ui.multiselect', [
 							scope.items.push({
 								label: parsedResult.viewMapper(local),
 								model: model[i],
-								checked: false
+								checked: attrs.msRestoreCheck ? !!model[i][attrs.msRestoreCheck] : false
 							});
 						}
 					}
@@ -124,6 +124,10 @@ angular.module('ui.multiselect', [
 					});
 					scope.noSearch = attrs.msSearch == 'false'; // (c) dhilt, 2015
 					scope.msReset = attrs.msReset;  // (c) dhilt, 2015
+					if(attrs.msOnSearch && typeof scope[attrs.msOnSearch] === 'function') {
+						// on search event callback (c) dhilt, 2015
+						scope.msOnSearchCallback = scope[attrs.msOnSearch];
+					}
 
 
 					function getHeaderText() {
@@ -406,7 +410,12 @@ angular.module('ui.multiselect', [
 					event.preventDefault();
 				};
 
-				scope.$watch('searchText.label', resetSelectionAndCounter);
+				scope.$watch('searchText.label', function(value) {
+					if(scope.msOnSearchCallback) {
+						scope.msOnSearchCallback(value);
+					}
+					resetSelectionAndCounter();
+				});
 
 				element.bind('keydown', handleKeyDown);
 
