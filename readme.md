@@ -5,6 +5,7 @@
 * new multiselect directive
 * modalDialogs improvements, fixes
 * rename ymusica typeahead directive to typeAhead
+* filtersService major refactoring
 
 ## v1.2.0
 * new modalDialogs factory
