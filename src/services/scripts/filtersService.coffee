@@ -1,4 +1,4 @@
-hill30Module.module('app').service('filtersService', [
+hill30Module.service('filtersService', [
 	'$location', ($location) ->
 
 		instances = {}
