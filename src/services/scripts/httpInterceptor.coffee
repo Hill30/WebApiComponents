@@ -13,17 +13,20 @@ hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, 
 		returnObject = {}
 		returnObject = $q.reject response
 
-		# error statuses which has to be ignored
+		# ignoreErrors: ignore any errors or just errors with specific statuses
 		if response.config and response.config.params and response.config.params.hasOwnProperty('ignoreErrors')
-			# if ignoreErrors has a value then let's try to get the list of statuses which have to be ignored
-			if ignoreList = response.config.params.ignoreErrors
-				if not angular.isArray(ignoreList)
-					ignoreList = [ignoreList]
-				for ignore in ignoreList
-					if response.status is ignore
-						return returnObject
-			# if ignoreErrors has no value then we need to ignore any error
-			else return returnObject
+
+			# if ignoreErrors is set to true then we need to ignore any error
+			if response.config.params.ignoreErrors is true or response.config.params.ignoreErrors is 'true'
+				return returnObject
+
+			# let's try to parse ignoreList to get the list of statuses which have to be ignored
+			ignoreList = response.config.params.ignoreErrors
+			if not angular.isArray(ignoreList)
+				ignoreList = [ignoreList]
+			for ignore in ignoreList
+				if response.status is ignore
+					return returnObject
 
 		# 403 permission error which leads to permission dialog
 		if response.status is 403
