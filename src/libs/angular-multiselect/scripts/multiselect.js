@@ -93,8 +93,9 @@ angular.module('ui.multiselect', [
 						//model changes. We need to do this only if it is done outside directive scope, from controller, for example.
 						if (angular.isDefined(newVal)) {
 							markChecked(newVal);
-							scope.$eval(changeHandler);
+							//scope.$eval(changeHandler);
 						}
+						scope.$eval(changeHandler); // I want to be able to clear end-data by items deselecting (c) dhilt, 2015
 						getHeaderText();
 						modelCtrl.$setValidity('required', scope.valid());
 					}, true);
