@@ -2,7 +2,7 @@
 	"author": "Hill30",
 	"name": "Hill30 components",
 	"description": "Hill30 AngularJS extras",
-	"version": "1.3.6",
+	"version": "1.3.7",
 	"main": "",
 	"dependencies": {
 		"jquery": "1.10.2",

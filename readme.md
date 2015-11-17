@@ -1,35 +1,35 @@
-### Release changelog
+## Release changelog
 
-## v1.3.0+
+### v1.3.*
 * Angular 1.3
 * new multiselect directive
 * modalDialogs improvements, fixes
 * rename ymusica typeahead directive to typeAhead
 * filtersService major refactoring (now has instances)
-* httpInterceptor option to ignore any errors
+* httpInterceptor ignoreErrors improvements
 
-## v1.2.0
+### v1.2.0
 * new modalDialogs factory
 * confirmation factory (based on modalDialogs) instead of old confirm service
 
-## v1.1.1+
+### v1.1.*
 
 * remove jQuery from selectBox and inputDate directives
 * uiMask (as ui.dateTimeMask module), uiMaskInterceptor (as service)
 * inputDate has mask-type attr (to use jquery.inputmask or ui.dateTimeMask)
 * remove ui.scroll from repo
 
-## v1.1.0
+### v1.1.0
 
 * common custom styles (webApiComponentsStyles.less)
 * popup is service now, directive removing
 
-## v1.0.0+
+### v1.0.*
 
 * Repository major refactoring
 * httpInterceptor refactoring
 
-## v0.1.1+
+### v0.1.*
 
 * jquery_inputmask plugin upd. (0.1.2)
 
@@ -48,7 +48,7 @@
 * inputDate and associationService improvements (0.1.8)
 
 
-## v0.1.1
+### v0.1.1
 
 * http interceptor factory
 
@@ -59,7 +59,7 @@
 * confirm factory
 
 
-## v0.1.0
+### v0.1.0
 
 * new <a href="https://github.com/Hill30/WebApiComponents/tree/master/src/directives/selectBox">selectBox</a> directive (instead of select2)
 
