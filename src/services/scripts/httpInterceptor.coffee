@@ -9,15 +9,15 @@ hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, 
 		else return false
 		return if container and container.hasOwnProperty('ignoreErrors') then container['ignoreErrors'] else false
 
+
 	###response: (response) ->
 
 		#$rootScope.$broadcast "success:#{response.status}", response
 
 		response || $q.when(response)###
 
-	responseError: (response) ->
 
-		#$rootScope.$broadcast "error_#{response.status}", response
+	responseError: (response) ->
 
 		returnObject = {}
 		returnObject = $q.reject response
@@ -31,7 +31,7 @@ hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, 
 			# let's try to parse ignoreErrors as array to get the list of statuses which have to be ignored
 			ignoreErrors = [ignoreErrors] if not angular.isArray(ignoreErrors)
 			for ignore in ignoreErrors
-				return returnObject if response.status is ignore
+				return returnObject if response.status is parseInt(ignore, 10)
 
 		# 403 permission error which leads to permission dialog
 		if response.status is 403
