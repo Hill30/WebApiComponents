@@ -1,5 +1,14 @@
 hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, $rootScope, $injector) ->
 
+	getIgnoreErrorsParam = (response) ->
+		return false if !response or !response.config
+		if response.config.method is 'GET'
+			container = response.config.params
+		else if response.config.method is 'POST'
+			container = response.config.data
+		else return false
+		return if container and container.hasOwnProperty('ignoreErrors') then container['ignoreErrors'] else false
+
 	###response: (response) ->
 
 		#$rootScope.$broadcast "success:#{response.status}", response
@@ -14,19 +23,15 @@ hill30Module.factory('httpInterceptor', ['$q', '$rootScope', '$injector' , ($q, 
 		returnObject = $q.reject response
 
 		# ignoreErrors: ignore any errors or just errors with specific statuses
-		if response.config and response.config.params and response.config.params.hasOwnProperty('ignoreErrors')
+		if ignoreErrors = getIgnoreErrorsParam(response)
 
 			# if ignoreErrors is set to true then we need to ignore any error
-			if response.config.params.ignoreErrors is true or response.config.params.ignoreErrors is 'true'
-				return returnObject
+			return returnObject if ignoreErrors is true or ignoreErrors is 'true'
 
-			# let's try to parse ignoreList to get the list of statuses which have to be ignored
-			ignoreList = response.config.params.ignoreErrors
-			if not angular.isArray(ignoreList)
-				ignoreList = [ignoreList]
-			for ignore in ignoreList
-				if response.status is ignore
-					return returnObject
+			# let's try to parse ignoreErrors as array to get the list of statuses which have to be ignored
+			ignoreErrors = [ignoreErrors] if not angular.isArray(ignoreErrors)
+			for ignore in ignoreErrors
+				return returnObject if response.status is ignore
 
 		# 403 permission error which leads to permission dialog
 		if response.status is 403
