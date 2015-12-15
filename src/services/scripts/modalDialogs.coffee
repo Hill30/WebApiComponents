@@ -87,11 +87,11 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		zIndex = getDialogZIndex(self)
 		setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the current dialog
 
-		self.modalWindowParent.style.display = ''
+		self.modalWindowParent.css({'display':'block'})
 
 		if openedDialogList.length is 1 # show backdrop only for the 1st opening of some dialog
 			bodyElement.addClass('modal-open')
-			modalBackdropParent.style.display = ''
+			modalBackdropParent.css({'display':'block'})
 
 	hideDialog = (self, options = {}) ->
 		for dlg, i in openedDialogList
@@ -102,7 +102,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 		self.onBeforeClose() if not options.preventOnBeforeClose and typeof self.onBeforeClose is 'function'
 
 		self.isDialogOpened = false
-		self.modalWindowParent.style.display = 'none'
+		self.modalWindowParent.css({'display':'none'})
 
 		if not openedDialogList.length
 			setModalBackdropZIndex(modalBackdropZIndex) # move backdrop to the default layer
@@ -112,7 +112,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			setModalBackdropZIndex(zIndex - 10 + 1) # move backdrop under the last opened dialog
 
 		if openedDialogList.length is 0 # hide back-drop when there are no dialogs
-			modalBackdropParent.style.display = 'none'
+			modalBackdropParent.css({'display':'none'})
 			bodyElement.removeClass('modal-open')
 
 	hideAllDialogs = (force) ->
