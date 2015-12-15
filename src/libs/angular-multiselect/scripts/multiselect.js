@@ -269,7 +269,7 @@ angular.module('ui.multiselect', [
 
 					scope.focusToggler = function(){
 						programFocus = true;
-						element.focus();
+						element[0].focus();
 					};
 
 					var handleFocus = function () {
