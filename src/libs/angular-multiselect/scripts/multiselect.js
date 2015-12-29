@@ -47,6 +47,7 @@ angular.module('ui.multiselect', [
 					scope.header = 'Select';
 					scope.multiple = isMultiple;
 					scope.disabled = false;
+					scope.placeholder = attrs.placeholder; // (c) dhilt, 2015
 
 					originalScope.$on('$destroy', function () {
 						scope.$destroy();
@@ -444,7 +445,10 @@ angular.module('multiselect.tpl.html', [])
 
 				"<div class=\"btn-group btn-group-sm\">\n" +
 				"  <a type=\"button\" class=\"btn btn-default dropdown-toggle\" ng-click=\"toggleSelect()\" ng-disabled=\"disabled\" ng-class=\"{'error': !valid()}\">\n" +
-				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-append-to-body=\"true\"  tooltip-placement=\"top\">{{text}}<span class=\"caret\" ></span></span>\n" +
+				"   <span class=\"btn-inn\" tooltip=\"{{text}}\" tooltip-append-to-body=\"true\"  tooltip-placement=\"top\">" +
+				"{{text}}" +
+				"<span ng-if=\"!text && placeholder\" class=\"placeholder\">{{placeholder}}</span>" +
+				"<span class=\"caret\" ></span></span>\n" +
 				"  </a>\n" +
 				"  <ul class=\"dropdown-menu\">\n" +
 				"    <li ng-hide=\"noSearch\" class=\"li-form-control\">\n" +
