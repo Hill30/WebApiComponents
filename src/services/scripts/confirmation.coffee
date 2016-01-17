@@ -3,6 +3,7 @@ hill30Module.factory 'confirmation', [
 	(modalDialogs, $templateCache) ->
 
 		dialogInstanceId = 'confirm'
+		instance = {}
 
 		bodyTemplate =
 			'{{ uiData.data.text }}'
@@ -15,6 +16,11 @@ hill30Module.factory 'confirmation', [
 				title: options.title or 'Confirmation'
 				windowClass: options.windowClass or 'modal-valign-middle modal-confirm'
 				iconClass: options.iconClass or 'glyphicon-checkmark'
+				onBeforeShow: () ->
+					$timeout ->
+						if found = instance.modalWindowParent.find('.btn-primary')
+							found[0].focus()
+					75
 				data:
 					text: options.text or 'Are you sure?'
 				actions: [
@@ -29,7 +35,8 @@ hill30Module.factory 'confirmation', [
 					do: options.confirmAction
 				]
 
-			modalDialogs.instance(dialogInstanceId).configure(configObject)
+			instance = modalDialogs.instance(dialogInstanceId)
+			instance.configure(configObject)
 
 		return {
 			configure: configure
