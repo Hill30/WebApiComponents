@@ -1,4 +1,4 @@
-hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '$filter',	($modal, $document, $templateCache, $filter) ->
+hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '$timeout',	($modal, $document, $templateCache, $timeout) ->
 
 	dialogList = []
 	openedDialogList = []
@@ -115,12 +115,26 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			modalBackdropParent.hide()
 			bodyElement.removeClass('modal-open')
 
+	focusDialog = (self, options = {}) ->
+		return if not self.isDialogOpened
+		# let's focus on first inner dlg's element with tabindex attr or (if can't) on dlg transclude wrapper
+		if foundTr = self.modalWindowParent.find('[modal-transclude]')
+			if found = foundTr.find('[tabindex]')
+				if found = found.first()
+					found = found
+				else
+					found = foundTr
+		else
+			found = foundTr
+		$timeout ( -> found[0].focus()), 75
+
 	hideAllDialogs = (force) ->
 		i = openedDialogList.length - 1
 		while dlg = openedDialogList[i--]
 			if force or dlg.autoClose
 				hideDialog(dlg)
 				continue
+			focusDialog(dlg)
 			return false
 		return true
 
@@ -207,15 +221,15 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 			self: {}
 			configure: configure
 			openDialog: openDialog
-			closeDialog: (options) ->
-				hideDialog(newDlg, options)
+			closeDialog: (options) -> hideDialog(newDlg, options)
+			focusDialog: (options) -> focusDialog(newDlg, options)
 		dialogList.push newDlg
 		newDlg
 
 
 	return {
-		commonTemplateId: commonTemplateId
-		instance: instance
-		hideAllDialogs: hideAllDialogs
+	commonTemplateId: commonTemplateId
+	instance: instance
+	hideAllDialogs: hideAllDialogs
 	}
 ]
