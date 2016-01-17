@@ -117,9 +117,9 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 
 	focusDialog = (self, options = {}) ->
 		return if not self.isDialogOpened
-		# let's focus on first inner dlg's element with tabindex attr or (if can't) on dlg transclude wrapper
+		# let's focus on first enabled inner dlg's element with tabindex attr or (if can't) on dlg transclude wrapper
 		if foundTr = self.modalWindowParent.find('[modal-transclude]')
-			if found = foundTr.find('[tabindex]')
+			if found = foundTr.find('[tabindex]:not([disabled])')
 				if found = found.first()
 					found = found
 				else
