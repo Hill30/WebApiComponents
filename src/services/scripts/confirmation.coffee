@@ -1,6 +1,6 @@
 hill30Module.factory 'confirmation', [
-	'modalDialogs', '$templateCache'
-	(modalDialogs, $templateCache) ->
+	'modalDialogs', '$templateCache', '$timeout'
+	(modalDialogs, $templateCache, $timeout) ->
 
 		dialogInstanceId = 'confirm'
 		instance = {}
