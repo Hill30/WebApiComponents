@@ -18,8 +18,8 @@ hill30Module.factory 'confirmation', [
 				iconClass: options.iconClass or 'glyphicon-checkmark'
 				onBeforeShow: () ->
 					$timeout ->
-						if found = instance.modalWindowParent.find('.btn-primary')
-							found[0].focus()
+						if found = instance.modalWindowParent.find('.btn-primary')[0]
+							found.focus()
 					75
 				data:
 					text: options.text or 'Are you sure?'

@@ -126,7 +126,7 @@ hill30Module.factory 'modalDialogs', ['$modal', '$document', '$templateCache', '
 					found = foundTr
 		else
 			found = foundTr
-		$timeout ( -> found[0].focus()), 75
+		$timeout(( -> found[0].focus()), 75) if found[0]
 
 	hideAllDialogs = (force) ->
 		i = openedDialogList.length - 1
